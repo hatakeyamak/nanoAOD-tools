@@ -245,8 +245,11 @@ class btagSFProducer(Module):
     def beginJob(self):
         # initialize BTagCalibrationReader
         # (cf. https://twiki.cern.ch/twiki/bin/viewauth/CMS/BTagCalibration )
+        print("self.algo: ", self.algo)
+        print(" os.path.join(self.inputFilePath, self.inputFileName): ", os.path.join(self.inputFilePath, self.inputFileName))
+        doValidateIpFile_ = True
         self.calibration = ROOT.BTagCalibration(
-            self.algo, os.path.join(self.inputFilePath, self.inputFileName))
+            self.algo, os.path.join(self.inputFilePath, self.inputFileName), doValidateIpFile_)
         self.readers = {}
         for wp in self.selectedWPs:
             wp_btv = {"l": 0, "m": 1, "t": 2,
