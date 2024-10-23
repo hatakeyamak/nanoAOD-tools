@@ -29,12 +29,12 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 #    True, "2018", "D", "Total", True, "AK8PFchs", False)
 #jmeCorrections = createJMECorrector(
 #    True, "UL2018", "D", "Total", "AK8PFchs", False)
-jmeCorrections = createJMECorrector(
+jmeCorrectionsAK8 = createJMECorrector(
     isMC          = True, 
     dataYear      = "UL2018", 
     runPeriod     = "D", 
     jesUncert     = "Total", 
-    jetType       = "AK8PFchs", 
+    jetType       = "AK8PFPuppi", # AK8PFPuppi, AK4PFchs
     noGroom       = False,
     applySmearing = True,
     isFastSim     = False,
@@ -42,12 +42,25 @@ jmeCorrections = createJMECorrector(
     splitJER      = False,
     saveMETUncs   = ['T1', 'T1Smear'])
 
+jmeCorrectionsAK4 = createJMECorrector(
+    isMC          = True, 
+    dataYear      = "UL2018", 
+    runPeriod     = "D", 
+    jesUncert     = "Total", 
+    jetType       = "AK4PFchs", # AK8PFPuppi, AK4PFchs
+    noGroom       = False,
+    applySmearing = True,
+    isFastSim     = False,
+    applyHEMfix   = False,
+    splitJER      = False,
+    saveMETUncs   = ['T1', 'T1Smear'])
 
 ## PU weights
 puWeights = puWeight_UL2018
 
 ## Prefiring corrections
 
+'''
 l1PrefirCorr2017 = lambda: PrefCorr(
     jetroot="L1prefiring_jetpt_2017BtoF.root",
     jetmapname="L1prefiring_jetpt_2017BtoF",
@@ -57,6 +70,7 @@ l1PrefirCorr2017 = lambda: PrefCorr(
         "PrefireWeight", "PrefireWeight_Up", "PrefireWeight_Down"
     ]
 )
+'''
 
 # b-tag SF producer
 btagSF2018 = lambda: btagSFProducer(
@@ -72,7 +86,8 @@ btagSF2018 = lambda: btagSFProducer(
 #fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/test/PNet_v1.root"] 
 #fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/NanoTestPost/240921_092131/0000/PNet_v1_1.root"] 
 #fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/2017/2BFC55D0-269D-5045-8CF4-6174A5DEA5E7.root"] # 2017 sample
-fnames = ["PNet_v1.root"] 
+fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_HtoAA_MH-125_MA-50_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_1k.root"]
+#fnames = ["PNet_v1.root"] 
 ##fnames = inputFiles()
 
 # p=PostProcessor(".",fnames,"Jet_pt>150","",[jetmetUncertainties2016(),exampleModuleConstr()],provenance=True)
@@ -89,7 +104,8 @@ p = PostProcessor(
     inputFiles=fnames, 
     #cut="",  
     modules=[
-        jmeCorrections(),
+        jmeCorrectionsAK8(),
+        jmeCorrectionsAK4(),
         puWeights(),
         #l1PrefirCorr2017(),
         btagSF2018()
