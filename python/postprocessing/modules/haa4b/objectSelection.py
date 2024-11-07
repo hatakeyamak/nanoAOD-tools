@@ -44,7 +44,7 @@ class Haa4bObjectSelectionProducer(Module):
         self.bJet_sel_eta = 2.4
         self.bJet_sel_flavB = 0.2783
         self.bJet_candH_dR = 1.4
-        
+
 
     def beginJob(self):
         pass
@@ -93,25 +93,30 @@ class Haa4bObjectSelectionProducer(Module):
             self.out.branch("Haa4b_cat_%s" % cat, "b")
         
         ## Branches with special or multi-object quantities
-        self.out.branch("Haa4b_iFatH",       "I")
-        self.out.branch("Haa4b_FatH",        "F")
-        self.out.branch("Haa4b_FatX_tagWZ",  "F")  ## Exclude lep-overlap
-        self.out.branch("Haa4b_FatX_tagTop", "F")  ## Exclude lep-overlap
-        self.out.branch("Haa4b_dijet_mass",  "F")
-        self.out.branch("Haa4b_dijet_dEta",  "F")
-        self.out.branch("Haa4b_dilep_mass",  "F")
-        self.out.branch("Haa4b_dilep_pt",    "F")
-        self.out.branch("Haa4b_dilep_dR",    "F")
-        self.out.branch("Haa4b_dilep_SFOS",  "b")
-        self.out.branch("Haa4b_dilep_OS",    "b")
+        self.out.branch("Haa4b_iFatH",        "I")
+        self.out.branch("Haa4b_FatH",         "F")
+        self.out.branch("Haa4b_FatX_tagWZ",   "F")  ## Exclude lep-overlap
+        self.out.branch("Haa4b_FatX_tagTop",  "F")  ## Exclude lep-overlap
+        self.out.branch("Haa4b_dijet_mass",   "F")
+        self.out.branch("Haa4b_dijet_pt",     "F")
+        self.out.branch("Haa4b_dijet_dEta",   "F")
+        self.out.branch("Haa4b_dijet_dPhi",   "F")
+        self.out.branch("Haa4b_dilep_mass",   "F")
+        self.out.branch("Haa4b_dilep_pt",     "F")
+        self.out.branch("Haa4b_dilep_dR",     "F")
+        self.out.branch("Haa4b_dilep_dPhi",   "F")
+        self.out.branch("Haa4b_dilep_charge", "I")
+        self.out.branch("Haa4b_dilep_SFOS",   "b")
 
-        ## Branches for counting selected objects, per event
+        ## Branches for categorization and triggers, per event
         self.out.branch("Haa4b_isHad",      "b")
         self.out.branch("Haa4b_isLep",      "b")
         self.out.branch("Haa4b_isMu",       "b")
         self.out.branch("Haa4b_isEle",      "b")
         self.out.branch("Haa4b_trigFat",    "b")
-        self.out.branch("Haa4b_trigDiJet",  "b")
+        self.out.branch("Haa4b_trigBtag",   "b")
+        self.out.branch("Haa4b_trigVBF",    "b")
+        self.out.branch("Haa4b_trigMET",    "b")
         self.out.branch("Haa4b_trigMu",     "b")
         self.out.branch("Haa4b_trigEle",    "b")
         self.out.branch("Haa4b_passFilters","b")
@@ -197,13 +202,14 @@ class Haa4bObjectSelectionProducer(Module):
             vMu.SetPtEtaPhiMass(mu.pt, mu.eta, mu.phi, 0.10566)
             if iCandH >= 0 and vMu.DeltaR(vCandH) < 0.8:
                 Mu_ovlp_iFat[iMu] = iCandH
-                Fat_ovlp_iMu[iCandH] = iMu
-            else:
-                for iX in range(len(iCandsX)):
-                    if vMu.DeltaR(vCandsX[iX]) < 0.8:
+                if Fat_ovlp_iMu[iCandH] < 0:
+                    Fat_ovlp_iMu[iCandH] = iMu
+            for iX in range(len(iCandsX)):
+                if vMu.DeltaR(vCandsX[iX]) < 0.8:
+                    if Mu_ovlp_iFat[iMu] < 0:
                         Mu_ovlp_iFat[iMu] = iCandsX[iX]
+                    if Fat_ovlp_iMu[iCandsX[iX]] < 0:
                         Fat_ovlp_iMu[iCandsX[iX]] = iMu
-                        break
             ## Common muon selection
             if mu.pt               < self.Mu_sel_pt:  continue
             if abs(mu.eta)         > self.Mu_sel_eta: continue
@@ -249,13 +255,14 @@ class Haa4bObjectSelectionProducer(Module):
             vEle.SetPtEtaPhiMass(ele.pt, ele.eta, ele.phi, 0.000511)
             if iCandH >= 0 and vEle.DeltaR(vCandH) < 0.8:
                 Ele_ovlp_iFat[iEle] = iCandH
-                Fat_ovlp_iEle[iCandH] = iEle
-            else:
-                for iX in range(len(iCandsX)):
-                    if vEle.DeltaR(vCandsX[iX]) < 0.8:
+                if Fat_ovlp_iEle[iCandH] < 0:
+                    Fat_ovlp_iEle[iCandH] = iEle
+            for iX in range(len(iCandsX)):
+                if vEle.DeltaR(vCandsX[iX]) < 0.8:
+                    if Ele_ovlp_iFat[iEle] < 0:
                         Ele_ovlp_iFat[iEle] = iCandsX[iX]
+                    if Fat_ovlp_iEle[iCandsX[iX]] < 0:
                         Fat_ovlp_iEle[iCandsX[iX]] = iEle
-                        break
             ## Common electron selection
             if ele.pt                 < self.Ele_sel_pt:  continue
             if abs(ele.eta)           > self.Ele_sel_eta: continue
@@ -291,16 +298,21 @@ class Haa4bObjectSelectionProducer(Module):
         nSelLeps  = len(iSelMus)  + len(iSelEles)
         ## Find how many trigger and selected leptons overlap AK8 Higgs candidate
         nTrigLepsOvlpH = 0
-        nSelLepsOvlpH  = 0
-        for ii in range(len(Mu_ovlp_iFat)):
-            if iCandH >= 0 and Mu_ovlp_iFat[ii] == iCandH:
-                nTrigLepsOvlpH += Mu_trig_bits[ii]
-                nSelLepsOvlpH  += Mu_sel_bits[ii]
-        for jj in range(len(Ele_ovlp_iFat)):
-            if iCandH >= 0 and Ele_ovlp_iFat[jj] == iCandH:
-                nTrigLepsOvlpH += Ele_trig_bits[jj]
-                nSelLepsOvlpH  += Ele_sel_bits[jj]
-        nSelLepsNonOvlpH = nSelLeps - nSelLepsOvlpH
+        idSelLepsNonOvlpH = []
+        vSelLepsNonOvlpH  = []
+        for iMu in range(len(Mu_ovlp_iFat)):
+            if iCandH >= 0 and Mu_ovlp_iFat[iMu] == iCandH:
+                nTrigLepsOvlpH += Mu_trig_bits[iMu]
+                if Mu_sel_bits[iMu] == 1:
+                    idSelLepsNonOvlpH.append(-13*Muons[iMu].charge)
+                    vSelLepsNonOvlpH.append(vSelMus[iSelMus.index(iMu)])
+        for iEle in range(len(Ele_ovlp_iFat)):
+            if iCandH >= 0 and Ele_ovlp_iFat[iEle] == iCandH:
+                nTrigLepsOvlpH += Ele_trig_bits[iEle]
+                if Ele_sel_bits[iEle] == 1:
+                    idSelLepsNonOvlpH.append(-11*Electrons[iEle].charge)
+                    vSelLepsNonOvlpH.append(vSelEles[iSelEles.index(iEle)])
+        nSelLepsNonOvlpH = len(vSelLepsNonOvlpH)
 
 
         #####################
@@ -314,6 +326,7 @@ class Haa4bObjectSelectionProducer(Module):
         Jet_ovlp_iMu  = list(-99 for jet in Jets)
         Jet_ovlp_iEle = list(-99 for jet in Jets)
 
+        vSelJets  = []
         iJetCandH = -99
         vJetCandH = ROOT.TLorentzVector()
         iJet = -1
@@ -330,11 +343,11 @@ class Haa4bObjectSelectionProducer(Module):
                         Jet_ovlp_iFat[iJet] = iCandsX[iX]
                         break
             for iMu in range(len(iSelMus)):
-                if vJet.DeltaR(vSelMus[iMu]) < 0.8:
+                if vJet.DeltaR(vSelMus[iMu]) < 0.4:
                     Jet_ovlp_iMu[iJet] = iSelMus[iX]
                     break
             for iEle in range(len(iSelEles)):
-                if vJet.DeltaR(vSelEles[iEle]) < 0.8:
+                if vJet.DeltaR(vSelEles[iEle]) < 0.4:
                     Jet_ovlp_iEle[iJet] = iSelEles[iX]
                     break
             ## Common jet pre-selection
@@ -349,6 +362,7 @@ class Haa4bObjectSelectionProducer(Module):
             ## "Regular" jet selection (i.e. not part of Haa4b candidate)
             if jet.pt >= self.Jet_sel_pt:
                 Jet_sel_bits[iJet] = 1
+                vSelJets.append(vJet)
             ## b-tagged jet selection
             if abs(jet.eta)      > self.bJet_sel_eta: continue
             if jet.btagDeepFlavB < self.bJet_sel_flavB: continue
@@ -363,21 +377,60 @@ class Haa4bObjectSelectionProducer(Module):
                 vJetCandH = vJet
         ## End loop: for jet in Jets
 
-        
+        self.out.fillBranch("Jet_Haa4b_presel",    Jet_presel_bits)
+        self.out.fillBranch("Jet_Haa4b_sel",       Jet_sel_bits)
+        self.out.fillBranch("Jet_Haa4b_btag",      Jet_btag_bits)
+        self.out.fillBranch("Jet_Haa4b_candH",     Jet_candH_bits)
+        self.out.fillBranch("Jet_Haa4b_ovlp_iFat", Jet_ovlp_iFat)
+        self.out.fillBranch("Jet_Haa4b_ovlp_iMu",  Jet_ovlp_iMu)
+        self.out.fillBranch("Jet_Haa4b_ovlp_iEle", Jet_ovlp_iEle)
+        self.out.fillBranch("Haa4b_nJetSel",   sum(Jet_sel_bits))
+        self.out.fillBranch("Haa4b_nJetBtag",  sum(Jet_btag_bits))
+        self.out.fillBranch("Haa4b_nFatH3b",   sum(Jet_candH_bits))
+
+
         ############################
         ## Compute useful quantities
         MET = Collection(event, "MET")
         vMET = ROOT.TLorentzVector()
         vMET.SetPtEtaPhiM(MET.pt, 0, MET.phi, 0)
 
-        dilep_mass
-        dilep_pt
-        dilep_dR
-        dilep_charge
-        dilep_SFOS
-        dijet_mass
-        dijet_dEta
-        
+        ## Pick 2 highest-pT jets for di-jet pair
+        is2j = (len(vSelJets) >= 2)
+        dijet_mass = ((vSelJets[0]+vSelJets[1]).M()          if is2j else -99)
+        dijet_pt   = ((vSelJets[0]+vSelJets[1]).Pt()         if is2j else -99)
+        dijet_dEta = (abs(vSelJets[0].DeltaEta(vSelJets[1])) if is2j else -99)
+        dijet_dPhi = (abs(vSelJets[0].DeltaPhi(vSelJets[1])) if is2j else -99)
+        ## Pick highest-pT muons then highest-pT electrons for di-lepton pair
+        is2L = (nSelLepsNonOvlpH >= 2)
+        if is2L:
+            vLep1 = vSelLepsNonOvlpH[0]
+            vLep2 = vSelLepsNonOvlpH[1]
+            idLep1 = idSelLepsNonOvlpH[0]
+            idLep2 = idSelLepsNonOvlpH[1]
+        dilep_mass   = ((vLep1+vLep2).M()           if is2L else -99)
+        dilep_pt     = ((vLep1+vLep2).Pt()          if is2L else -99)
+        dilep_dR     = (vLep1.DeltaR(vLep2)         if is2L else -99)
+        dilep_dPhi   = (abs(vLep1.DeltaPhi(vLep2))  if is2L else -99)
+        dilep_charge = (2*(1-(idLep1>0)-(idLep2>0)) if is2L else -99)
+        dilep_SFOS   = ((idLep1 + idLep2 == 0)      if is2L else -99)
+
+        self.out.fillBranch("Haa4b_iFatH",        iCandH)
+        self.out.fillBranch("Haa4b_FatH",         AWBdecidewhattoaddhere:tag,masses,etc)
+        self.out.fillBranch("Haa4b_FatX_tagWZ",   "F")  ## Exclude lep-overlap
+        self.out.fillBranch("Haa4b_FatX_tagTop",  "F")  ## Exclude lep-overlap
+        self.out.fillBranch("Haa4b_dijet_mass",   dijet_mass)
+        self.out.fillBranch("Haa4b_dijet_pt",     dijet_pt)
+        self.out.fillBranch("Haa4b_dijet_dEta",   dijet_dEta)
+        self.out.fillBranch("Haa4b_dijet_dPhi",   dijet_dPhi)
+        self.out.fillBranch("Haa4b_dilep_mass",   dilep_mass)
+        self.out.fillBranch("Haa4b_dilep_pt",     dilep_pt)
+        self.out.fillBranch("Haa4b_dilep_dR",     dilep_dR)
+        self.out.fillBranch("Haa4b_dilep_dPhi",   dilep_dPhi)
+        self.out.fillBranch("Haa4b_dilep_charge", dilep_charge)
+        self.out.fillBranch("Haa4b_dilep_SFOS",   dilep_SFOS)
+
+
         ####################
         ## Define categories
         cat_bit = {}
@@ -422,30 +475,39 @@ class Haa4bObjectSelectionProducer(Module):
         for iCat in range(len(CATS)):
             self.out.fillBranch("Haa4b_cat_%s" % CATS[iCat], cat_bits[iCat])
 
-        self.out.fillBranch("Haa4b_cat_gg0l",   "b")
-        self.out.fillBranch("Haa4b_cat_VBFjj",  "b")
-        self.out.fillBranch("Haa4b_cat_Vjj",    "b")
-        self.out.fillBranch("Haa4b_cat_Zvv",    "b")
-        self.out.fillBranch("Haa4b_cat_Zll",    "b")
-        self.out.fillBranch("Haa4b_cat_Wlv",    "b")
-        self.out.fillBranch("Haa4b_cat_ttlv",   "b")
-        self.out.fillBranch("Haa4b_cat_ttll",   "b")
-        self.out.fillBranch("Haa4b_cat_3l",     "b")
-        self.out.fillBranch("Haa4b_cat_other",  "b")
+        self.out.fillBranch("Haa4b_isHad", (iCandH >= 0 and nTrigLeps == 0))
+        self.out.fillBranch("Haa4b_isLep", (iCandH >= 0 and nTrigLeps >= 1 and nTrigLepsOvlpH == 0))
+        self.out.fillBranch("Haa4b_isMu",  (iCandH >= 0 and len(iTrigMus) >= 1 and nTrigLepsOvlpH == 0))
+        self.out.fillBranch("Haa4b_isEle", (iCandH >= 0 and len(iTrigEles) >= 1 and len(iTrigMus) == 0 and nTrigLepsOvlpH == 0))
 
-        self.out.fillBranch("Jet_Haa4b_presel", Jet_presel_bits)
-        self.out.fillBranch("Jet_Haa4b_sel",    Jet_sel_bits)
-        self.out.fillBranch("Jet_Haa4b_btag",   Jet_btag_bits)
-        self.out.fillBranch("Jet_Haa4b_candH",  Jet_candH_bits)
-        self.out.fillBranch("Jet_Haa4b_ovlp_iFat", Jet_ovlp_iFat)
-        self.out.fillBranch("Jet_Haa4b_ovlp_iMu",  Jet_ovlp_iMu)
-        self.out.fillBranch("Jet_Haa4b_ovlp_iEle", Jet_ovlp_iEle)
-        self.out.fillBranch("Haa4b_nJetSel",  sum(Jet_sel_bits))
-        self.out.fillBranch("Haa4b_nJetBtag", sum(Jet_btag_bits))
-        self.out.fillBranch("Haa4b_nFatH3b", sum(Jet_candH_bits))
+        HLT  = Collection(event, "HLT")
+        L1   = Collection(event, "L1")
+        Flag = Collection(event, "Flag")
+        self.out.fillBranch("Haa4b_trigFat",  ( ((HLT.PFJet500 or HLT.AK8PFJet500 or HLT.AK8PFJet400_TrimMass30 or
+                                                  HLT.AK8PFJet330_TrimMass30_PFAK8BoostedDoubleB_np4) and (L1.SingleJet180)) or
+                                                ((HLT.AK8PFHT800_TrimMass50 or HLT.PFHT1050) and (L1.SingleJet180 or L1.HTT360er)) ) )
+        self.out.fillBranch("Haa4b_trigBtag", ( (HLT.DoublePFJets116MaxDeta1p6_DoubleCaloBTagDeepCSV_p71 and
+                                                 (L1.DoubleJet112er2p3_dEta_Max1p6 or L1.DoubleJet150er2p5)) or
+                                                (HLT.PFHT330PT30_QuadPFJet_75_60_45_40_TriplePFBTagDeepCSV_4p5 and
+                                                 (L1.HTT320er or L1.HTT360er or L1.HTT400er or L1.ETT2000 or
+                                                  L1.HTT320er_QuadJet_70_55_40_40_er2p4 or
+                                                  L1.HTT320er_QuadJet_80_60_er2p1_45_40_er2p3)) ) )
+        self.out.fillBranch("Haa4b_trigVBF", ( (HLT.QuadPFJet103_88_75_15_PFBTagDeepCSV_1p3_VBF2 or
+                                                HLT.QuadPFJet103_88_75_15_DoublePFBTagDeepCSV_1p3_7p7_VBF1) and
+                                               (L1.TripleJet_95_75_65_DoubleJet_75_65_er2p5 or
+                                                L1.HTT320er or L1.SingleJet180) ) )
+        self.out.fillBranch("Haa4b_trigMET", ( ((HLT.PFMET120_PFMHT120_IDTight_PFHT60 or HLT.PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60) and
+                                                (L1.ETMHF90_HTT60er or L1.ETMHF100_HTT60er or L1.ETMHF110_HTT60er)) or
+                                               ((HLT.PFMET110_PFMHT110_IDTight_CaloBTagDeepCSV_3p1 or
+                                                 HLT.PFMETTypeOne200_HBHE_BeamHaloCleaned or HLT.PFMETTypeOne140_PFMHT140_IDTight) and
+                                                (L1.ETMHF100 or L1.ETMHF110 or L1.ETMHF120 or L1.ETMHF130)) ) )
+        self.out.fillBranch("Haa4b_trigMu",  ( (HLT.IsoMu24 or HLT.IsoMu50) and (L1.SingleMu22 or L1.SingleMu25) ) )
+        self.out.fillBranch("Haa4b_trigEle", ( (HLT.Ele32_WPTight_Gsf or HLT.Ele50_CaloIdVT_GsfTrkIdT_PFJet165 or
+                                                HLT.Ele115_CaloIdVT_GsfTrkIdT or HLT.Ele35_WPTight_Gsf_L1EGMT) ) )
+        self.out.fillBranch("Haa4b_passFilters", (Flag.goodVertices and Flag.globalSuperTightHalo2016Filter and Flag.HBHENoiseFilter and
+                                                  Flag.HBHENoiseIsoFilter and Flag.eeBadScFilter and Flag.BadPFMuonFilter and
+                                                  Flag.BadPFMuonDzFilter and Flag.ecalBadCalibFilter and Flag.EcalDeadCellTriggerPrimitiveFilter) )
 
-
-        
 
         ############
         ## All done!
