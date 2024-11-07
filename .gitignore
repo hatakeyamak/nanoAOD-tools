@@ -8,3 +8,6 @@ build
 *.d
 *.so
 *.pcm
+crab*/*.root
+crab*/cout*.txt
+crab*/FrameworkJobReport.xml

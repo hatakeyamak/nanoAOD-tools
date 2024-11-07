@@ -16,13 +16,20 @@ process.load('Configuration.EventContent.EventContent_cff')
 process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_cff')
+#process.load('PhysicsTools.NanoAOD.nano_cff')
 process.load('PhysicsTools.NanoAOD.nano_addHto4bPlus_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
+process.maxEvents = cms.untracked.PSet(                                                                                                                                                                                                                      
+    input = cms.untracked.int32(100)                                                                                                                                                                                                                     
+)
+
 # Input source
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring('DUMMY'),
+    #fileNames = cms.untracked.vstring('DUMMY'),
+    #fileNames = cms.untracked.vstring('file:/eos/cms/store/group/phys_susy/HToaaTo4b/MiniAOD/2018/MC/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18/003A1234-0E1D-154A-9704-9406B61CB642.root'),
+    fileNames = cms.untracked.vstring('file:/eos/cms/store/group/phys_susy/HToaaTo4b/MiniAOD/2018/MC/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18/0B5221FE-B9CF-A449-A523-33FFCAF65CD2.root'),
     secondaryFileNames = cms.untracked.vstring()
 )
 process.options = cms.untracked.PSet(
@@ -37,7 +44,7 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
-    skimFatJet = cms.untracked.bool(True),
+    #skimFatJet = cms.untracked.bool(True),
     compressionAlgorithm = cms.untracked.string('LZMA'),
     compressionLevel = cms.untracked.int32(9),
     dataset = cms.untracked.PSet(
@@ -66,9 +73,19 @@ associatePatAlgosToolsTask(process)
 # customisation of the process.
 # Automatic addition of the customisation function from PhysicsTools.NanoAOD.nano_addHto4bPlus_cff
 from PhysicsTools.NanoAOD.nano_addHto4bPlus_cff import nanoAOD_customizeMC 
-
 #call to customisation function nanoAOD_customizeMC imported from PhysicsTools.NanoAOD.nano_addHto4bPlus_cff
 process = nanoAOD_customizeMC(process, True)
+#process = nanoAOD_customizeMC(process, False)
+
+
+# Automatic addition of the customisation function from PhysicsTools.NanoAOD.nano_cff
+#from PhysicsTools.NanoAOD.nano_cff import nanoAOD_customizeMC 
+#call to customisation function nanoAOD_customizeMC imported from PhysicsTools.NanoAOD.nano_cff
+#process = nanoAOD_customizeMC(process)
+
+# add PF branches
+#from PhysicsTools.PFNano.pfnano_cff import PFnano_customizeMC
+#process = PFnano_customizeMC(process)
 # End of customisation functions
 
 # Customisation from command line
