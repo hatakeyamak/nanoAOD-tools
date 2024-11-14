@@ -4,7 +4,8 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetHelperRun2 impor
 from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetUncertainties import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.PrefireCorr import *
-from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
+#from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
+from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducerUL import *
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 from importlib import import_module
 import os
@@ -33,12 +34,15 @@ jmeCorrectionsAK8 = createJMECorrector(
     isMC          = True, 
     dataYear      = "UL2018", 
     runPeriod     = "D", 
-    jesUncert     = "Total", 
+    jesUncert     = "Total", # Options: "Total", "All"
     jetType       = "AK8PFPuppi", # AK8PFPuppi, AK4PFchs
     noGroom       = False,
+    applyWJMS     = False, 
+    applyMsdJMS   = False,
+    applyMsdJMR   = False,
     applySmearing = True,
     isFastSim     = False,
-    applyHEMfix   = False,
+    applyHEMfix   = True, # <<<< True for 2018: additional "HEMIssue" uncertainty 
     splitJER      = False,
     saveMETUncs   = ['T1', 'T1Smear'])
 
@@ -51,7 +55,7 @@ jmeCorrectionsAK4 = createJMECorrector(
     noGroom       = False,
     applySmearing = True,
     isFastSim     = False,
-    applyHEMfix   = False,
+    applyHEMfix   = True, # <<<< True for 2018: additional "HEMIssue" uncertainty
     splitJER      = False,
     saveMETUncs   = ['T1', 'T1Smear'])
 
@@ -76,7 +80,7 @@ l1PrefirCorr2017 = lambda: PrefCorr(
 btagSF2018 = lambda: btagSFProducer(
     era = 'UL2018', 
     algo='deepjet', 
-    selectedWPs=['M', 'shape_corr'],
+    selectedWPs=['M'], #['M', 'shape_corr'],
     sfFileName=None, 
     verbose=0, 
     jesSystsForShape=["jes"]
@@ -110,8 +114,8 @@ p = PostProcessor(
         #l1PrefirCorr2017(),
         btagSF2018()
         ], 
-    provenance=True,
-    fwkJobReport=True,
+    #provenance=True,
+    #fwkJobReport=True,
     #jsonInput=runsAndLumis()
     )
 p.run()

@@ -107,7 +107,19 @@ jmsValues = {
     'UL2016': [1.000, 1.000, 1.000],  # placeholder
     'UL2017': [1.000, 1.000, 1.000],  # placeholder
     'UL2018': [1.000, 1.000, 1.000],  # placeholder
-}   
+}
+# jet mass scale for softdrop mass
+jmsMsdValues = {
+    '2016': [1.00, 0.9906, 1.0094],  # nominal, down, up
+    '2017': [0.982, 0.978, 0.986],
+    # Use 2017 values for 2018 until 2018 are released
+    '2018': [0.982, 0.978, 0.986],
+    'UL2016_preVFP': [1.000, 1.000, 1.000],  # placeholder
+    'UL2016': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'], # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044
+    'UL2017': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'], # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044
+    'UL2018': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'] # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044
+}
+
 
 
 def createJMECorrector(isMC=True,
@@ -116,6 +128,9 @@ def createJMECorrector(isMC=True,
                        jesUncert="Total",
                        jetType="AK4PFchs",
                        noGroom=False,
+                       applyWJMS=True,
+                       applyMsdJMS=True,
+                       applyMsdJMR=True,
                        metBranchName="MET",
                        applySmearing=True,
                        isFastSim=False,
@@ -136,10 +151,13 @@ def createJMECorrector(isMC=True,
     jerTag_ = jerTagsMC[dataYear]
     jmrValues_ = jmrValues[dataYear]
     jmsValues_ = jmsValues[dataYear]
+    jmsMsdValues_ = jmsMsdValues[dataYear]
     archiveTag_ = archiveTagsDATA[dataYear]
     met_ = metBranchName
+    print('dataYear: ',dataYear, ', runPeriod: ', runPeriod, ', jetType: ',jetType)
     print('JEC : ' + str(jecTag_) + '\t JER : ' + str(jerTag_))
     print('MET branch : ' + str(met_))
+    print('jmeUncert_: ',jmeUncert_)
     jmeCorrections = None
     # jme corrections
     if 'AK4' in jetType:
@@ -176,6 +194,10 @@ def createJMECorrector(isMC=True,
                 jerTag=jerTag_,
                 jmrVals=jmrValues_,
                 jmsVals=jmsValues_,
+                jmsMsdVals=jmsMsdValues_,
+                applyWJMS=applyWJMS,
+                applyMsdJMS=applyMsdJMS,
+                applyMsdJMR=applyMsdJMR,
                 applySmearing=applySmearing,
                 applyHEMfix=applyHEMfix,
                 splitJER=splitJER)
@@ -189,6 +211,10 @@ def createJMECorrector(isMC=True,
                 jerTag=jerTag_,
                 jmrVals=jmrValues_,
                 jmsVals=jmsValues_,
+                jmsMsdVals=jmsMsdValues_,
+                applyWJMS=applyWJMS,
+                applyMsdJMS=False,
+                applyMsdJMR=False,
                 isData=True)
 
     return jmeCorrections
