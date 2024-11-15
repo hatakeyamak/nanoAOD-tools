@@ -584,8 +584,7 @@ class Haa4bObjectSelectionProducer(Module):
         iSelJetsNonH = [ij for ij in iSelJets if ij != iJetCandH]
         vSelJetsNonH = [vj for vj in vSelJets if (iJetCandH < 0 or vj.DeltaR(vJetCandH) > 0.05)]
         if len(iSelJetsNonH) != len(vSelJetsNonH):
-            print('\n\nWIERD ERROR! %d vs. %s sel non-H jets! Quitting.' % (len(iSelJetsNonH), len(vSelJetsNonH)))
-            sys.exit()
+            print('\n\nWIERD ERROR! %d vs. %s sel non-H jets!' % (len(iSelJetsNonH), len(vSelJetsNonH)))
         is2j = (len(vSelJetsNonH) >= 2)
         dijet_mass = ((vSelJetsNonH[0]+vSelJetsNonH[1]).M()              if is2j else -99)
         dijet_pt   = ((vSelJetsNonH[0]+vSelJetsNonH[1]).Pt()             if is2j else -99)
@@ -689,16 +688,16 @@ class Haa4bObjectSelectionProducer(Module):
             HEM_bit[cat] = HEM_candH
         ## 0-lepton categories: gg0l, VBFjj, Vjj, ttHad, Zvv
         if iCandH >= 0 and nTrigLeps == 0:
-            ## For now, only make "exclusive" categories for >=1b, 0b+MET, 0b+dijet, and 0b
-            if sum(Jet_btag_nonH_bits) > 0:
-                cat_bit['ttHad'] = 1
-                HEM_bit['ttHad'] = HEM_candH or (sum(Jet_btag_HEM_bits) > 0)
-            elif vMET.Pt() > 200:
+            ## For now, only make "exclusive" categories among high-MET and low-MET >=1b, 0b+dijet, and 0b
+            if vMET.Pt() > 200:
                 if abs(vMET.DeltaPhi(vCandH)) > 0.5*math.pi:
                     cat_bit['Zvv'] = 1
                 for ii in range(len(vJets)):
                     if Jet_HEM_EM_bits[ii] == 1 and abs(vJets[ii].DeltaPhi(vMET)) < 0.3:
                         HEM_bit['Zvv'] = 1
+            elif sum(Jet_btag_nonH_bits) > 0:
+                cat_bit['ttHad'] = 1
+                HEM_bit['ttHad'] = HEM_candH or (sum(Jet_btag_HEM_bits) > 0)
             elif dijet_mass > 450 and dijet_dEta > 2.2:
                 ## https://indico.cern.ch/event/1450818/#34-mohamed-darwish
                 cat_bit['VBFjj'] = 1
@@ -706,7 +705,7 @@ class Haa4bObjectSelectionProducer(Module):
             else:
                 cat_bit['gg0l'] = 1
             ## Hadronic categories based on 2nd AK8 jet are provisional, non-exclusive
-            if len(iCandsX) > 0:
+            if len(iCandsX) > 0 and vMET.Pt() <= 200:
                 cat_bit['Vjj']   = (max_WZ_tag  > self.Fat_candX_Vqq)
                 cat_bit['ttHad'] = (max_top_tag > self.Fat_candX_Tbqq) or cat_bit['ttHad']
                 HEM_bit['Vjj']   = HEM_candH or (sum([Fat_HEM_bits[iX] for iX in iCandsX]) > 0)
@@ -719,10 +718,10 @@ class Haa4bObjectSelectionProducer(Module):
                 cat_bit['3l'] = 1
             elif nSelLepsNonOvlpH == 2:
                 if dilep_charge == 0:
-                    if sum(Jet_btag_nonH_bits) > 0:
-                        cat_bit['ttll'] = (dilep_mass > 12.0 and (dilep_SFOS == 0 or abs(dilep_mass - 90.0) >= 10.0))
-                    elif dilep_SFOS == 1 and abs(dilep_mass - 90.0) < 10.0:
+                    if dilep_SFOS == 1 and abs(dilep_mass - 90.0) < 10.0:
                         cat_bit['Zll'] = 1
+                    elif sum(Jet_btag_nonH_bits) > 0 and dilep_mass > 12.0:
+                        cat_bit['ttll'] = 1
                 else:
                     cat_bit['2lSS'] = 1
             elif nSelLepsNonOvlpH == 1:
