@@ -11,3 +11,4 @@ build
 crab*/*.root
 crab*/cout*.txt
 crab*/FrameworkJobReport.xml
+crab_customNanoAODAndPostprocessing/crab_NanoPost1/

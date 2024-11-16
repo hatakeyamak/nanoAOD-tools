@@ -30,16 +30,19 @@ echo "argument 1: " $1
 echo "PWD: " $PWD 
 echo ls
 ls
+echo "ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02 : "
+ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02
+
 
 # If you are curious, you can have a look at the tweaked PSet. This however won't give you any information...
-echo "================= PSet.py file =================="
-cat PSet.py
-echo "================= PSet.py file END =================="
+#echo "================= PSet.py file =================="
+#cat PSet.py
+#echo "================= PSet.py file END =================="
 
 # This is what you need if you want to look at the tweaked parameter set!!
-echo "================= Dumping PSet ===================="
-python -c "import PSet; print PSet.process.dumpPython()"
-echo "================= Dumping PSet END ===================="
+#echo "================= Dumping PSet ===================="
+#python -c "import PSet; print PSet.process.dumpPython()"
+#echo "================= Dumping PSet END ===================="
 
 #python crab_script.py $1
 #python example_postproc_1.py $1

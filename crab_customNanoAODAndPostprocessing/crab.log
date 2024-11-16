@@ -1,0 +1,47 @@
+DEBUG 2024-11-15 14:33:16.472 UTC: 	 CRAB Client version: v3.241030
+DEBUG 2024-11-15 14:33:16.472 UTC: 	 Running on: Linux lxplus9118.cern.ch 5.14.0-427.40.1.el9_4.x86_64 #1 SMP PREEMPT_DYNAMIC Fri Oct 4 15:22:45 EDT 2024 x86_64 x86_64 x86_64 GNU/Linux
+DEBUG 2024-11-15 14:33:16.473 UTC: 	 Using SINGULARITY image: el7:x86_64
+DEBUG 2024-11-15 14:33:16.473 UTC: 	 Operating System: CentOS Linux 7 (Core)
+DEBUG 2024-11-15 14:33:16.473 UTC: 	 Executing command: 'status'
+DEBUG 2024-11-15 14:33:16.474 UTC: 	 Found CRAB cache file /afs/cern.ch/user/s/ssawant/.crab3
+ERROR 2024-11-15 14:33:16.475 UTC: 	 Error: ./crab_NanoPost1 is not a valid CRAB project directory.
+ERROR 2024-11-15 14:33:16.475 UTC: 	 Caught ClientException exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/bin/crab.py", line 157, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/bin/crab.py", line 135, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])  # the crab command to be executed
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/lib/CRABClient/Commands/status.py", line 48, in __init__
+    SubCommand.__init__(self, logger, cmdargs)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/lib/CRABClient/Commands/SubCommand.py", line 285, in __init__
+    SubCommand.validateOptions(self)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/lib/CRABClient/Commands/SubCommand.py", line 690, in validateOptions
+    raise ConfigurationException(msg)
+CRABClient.ClientExceptions.ConfigurationException: [91mError[0m: ./crab_NanoPost1 is not a valid CRAB project directory.
+INFO 2024-11-15 14:33:16.479 UTC: 	 Log file is /afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAODTools/crab_customNanoAODAndPostprocessing/crab.log
+DEBUG 2024-11-15 14:58:06.363 UTC: 	 CRAB Client version: v3.241030
+DEBUG 2024-11-15 14:58:06.363 UTC: 	 Running on: Linux lxplus9118.cern.ch 5.14.0-427.40.1.el9_4.x86_64 #1 SMP PREEMPT_DYNAMIC Fri Oct 4 15:22:45 EDT 2024 x86_64 x86_64 x86_64 GNU/Linux
+DEBUG 2024-11-15 14:58:06.363 UTC: 	 Using SINGULARITY image: el7:x86_64
+DEBUG 2024-11-15 14:58:06.363 UTC: 	 Operating System: CentOS Linux 7 (Core)
+DEBUG 2024-11-15 14:58:06.363 UTC: 	 Executing command: 'submit'
+DEBUG 2024-11-15 14:58:06.363 UTC: 	 Found CRAB cache file /afs/cern.ch/user/s/ssawant/.crab3
+INFO 2024-11-15 14:58:06.364 UTC: 	 Will use CRAB configuration file crabConfigMC.py
+DEBUG 2024-11-15 14:58:06.364 UTC: 	 Loading CRAB configuration file.
+DEBUG 2024-11-15 14:58:06.391 UTC: 	 Will use CRAB plugin ANALYSIS (i.e. will run an analysis job type).
+ERROR 2024-11-15 14:58:06.391 UTC: 	 Cannot find the file crab_script.sh specified in the JobType.scriptExe configuration parameter.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+ERROR 2024-11-15 14:58:06.391 UTC: 	 Caught ClientException exception
+Traceback (most recent call last):
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/bin/crab.py", line 157, in <module>
+    client()
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/bin/crab.py", line 135, in __call__
+    self.cmd = sub_cmd(self.logger, args[1:])  # the crab command to be executed
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/lib/CRABClient/Commands/submit.py", line 36, in __init__
+    SubCommand.__init__(self, logger, cmdargs, disable_interspersed_args=True)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/lib/CRABClient/Commands/SubCommand.py", line 330, in __init__
+    self.loadConfig(self.options.config, self.args)
+  File "/cvmfs/cms.cern.ch/share/cms/crab-prod/v3.241030.00/lib/CRABClient/Commands/SubCommand.py", line 96, in loadConfig
+    raise ConfigurationException(configmsg)
+ConfigurationException: Cannot find the file crab_script.sh specified in the JobType.scriptExe configuration parameter.
+The documentation about the CRAB configuration file can be found in https://twiki.cern.ch/twiki/bin/view/CMSPublic/CRAB3ConfigurationFile
+INFO 2024-11-15 14:58:06.420 UTC: 	 Log file is /afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAODTools/crab_customNanoAODAndPostprocessing/crab.log
