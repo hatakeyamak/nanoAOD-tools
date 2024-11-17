@@ -5,7 +5,7 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetUncertainties im
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.PrefireCorr import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
-from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.objectSelection import Haa4bObjectSelectionBranches
+from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.objectSelection import Haa4bObjectSelectionProducer
 from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.genParticles import Haa4bGenParticlesBranches
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 from importlib import import_module
@@ -13,6 +13,9 @@ import os
 import sys
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True
+
+IS_MC = True
+YEAR  = '2018'
 
 # this takes care of converting the input files from CRAB
 #from PhysicsTools.NanoAODTools.postprocessing.framework.crabhelper import inputFiles, runsAndLumis
@@ -33,7 +36,7 @@ ROOT.PyConfig.IgnoreCommandLineOptions = True
 #    True, "UL2018", "D", "Total", "AK8PFchs", False)
 jmeCorrectionsAK8 = createJMECorrector(
     isMC          = True, 
-    dataYear      = "UL2018", 
+    dataYear      = "UL"+YEAR,
     runPeriod     = "D", 
     jesUncert     = "Total", 
     jetType       = "AK8PFPuppi", # AK8PFPuppi, AK4PFchs
@@ -46,7 +49,7 @@ jmeCorrectionsAK8 = createJMECorrector(
 
 jmeCorrectionsAK4 = createJMECorrector(
     isMC          = True, 
-    dataYear      = "UL2018", 
+    dataYear      = "UL"+YEAR,
     runPeriod     = "D", 
     jesUncert     = "Total", 
     jetType       = "AK4PFchs", # AK8PFPuppi, AK4PFchs
@@ -58,7 +61,8 @@ jmeCorrectionsAK4 = createJMECorrector(
     saveMETUncs   = ['T1', 'T1Smear'])
 
 ## PU weights
-puWeights = puWeight_UL2018
+if YEAR == '2018':
+    puWeights = puWeight_UL2018
 
 ## Prefiring corrections
 
@@ -75,8 +79,8 @@ l1PrefirCorr2017 = lambda: PrefCorr(
 '''
 
 # b-tag SF producer
-btagSF2018 = lambda: btagSFProducer(
-    era = 'UL2018', 
+btagSF = lambda: btagSFProducer(
+    era = 'UL'+YEAR,
     algo='deepjet', 
     selectedWPs=['M', 'shape_corr'],
     sfFileName=None, 
@@ -89,7 +93,9 @@ btagSF2018 = lambda: btagSFProducer(
 #fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/NanoTestPost/240921_092131/0000/PNet_v1_1.root"] 
 #fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/2017/2BFC55D0-269D-5045-8CF4-6174A5DEA5E7.root"] # 2017 sample
 #fnames=["/afs/cern.ch/work/a/abrinke1/public/HiggsToAA/NanoAOD/crab/2018/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_HtoAA_MH-125_MA-50_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_10k.root"]
-fnames=["/afs/cern.ch/work/a/abrinke1/public/HiggsToAA/NanoAOD/crab/2018/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_ZH_HtoAA_MH-125_MA-32.5_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_20k.root"]
+fnames=["/afs/cern.ch/work/a/abrinke1/public/HiggsToAA/NanoAOD/crab/2018/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_ggH_HtoAA_MH-125_MA-32.5_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_100k.root"]
+#fnames=["/afs/cern.ch/work/a/abrinke1/public/HiggsToAA/NanoAOD/crab/2018/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_ggHToBB_Pt-200toInf_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_20k.root"]
+#fnames=["/afs/cern.ch/work/a/abrinke1/public/HiggsToAA/NanoAOD/crab/2018/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_JetHT_2018C_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_100k.root"]
 
 #fnames = ["PNet_v1.root"] 
 ##fnames = inputFiles()
@@ -112,9 +118,9 @@ p = PostProcessor(
         #jmeCorrectionsAK4(),
         #puWeights(),
         #l1PrefirCorr2017(),
-        #btagSF2018(),
+        #btagSF(),
         Haa4bGenParticlesBranches(),
-        Haa4bObjectSelectionBranches()
+        Haa4bObjectSelectionProducer(IS_MC, YEAR)
         ], 
     provenance=True,
     fwkJobReport=True,
@@ -122,4 +128,4 @@ p = PostProcessor(
     )
 p.run()
 
-print("DONE example_postproc_1.py")
+print("DONE example_postproc_1_AWB.py")

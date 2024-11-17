@@ -11,7 +11,10 @@ import random
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 
 class Haa4bObjectSelectionProducer(Module):
-    def __init__(self):
+
+    def __init__(self, IS_MC, YEAR):
+        self.isMC     = IS_MC
+        self.year_str = YEAR
         ## Latest object selection information:
         ## https://indico.cern.ch/event/1430644/#2-update-on-higgs-aa-4b-booste
         ## https://indico.cern.ch/event/1450818/#17-andrew-brinkerhoff
@@ -67,9 +70,12 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("FatJet_Haa4b_candX",     "b", lenVar="nFatJet")
         self.out.branch("FatJet_Haa4b_ovlp_iMu",  "I", lenVar="nFatJet")
         self.out.branch("FatJet_Haa4b_ovlp_iEle", "I", lenVar="nFatJet")
-        self.out.branch("FatJet_genPartIdx",      "I", lenVar="nFatJet")
-        self.out.branch("FatJet_genPart_pdgId",   "I", lenVar="nFatJet")
-        self.out.branch("FatJet_genPart_dR",      "F", lenVar="nFatJet")
+        if self.isMC:
+            self.out.branch("FatJet_genPartIdx",      "I", lenVar="nFatJet")
+            self.out.branch("FatJet_genPart_pdgId",   "I", lenVar="nFatJet")
+            self.out.branch("FatJet_genPart_dR",      "F", lenVar="nFatJet")
+            self.out.branch("FatJet_nBPartons",       "I", lenVar="nFatJet")
+            self.out.branch("FatJet_nCPartons",       "I", lenVar="nFatJet")
         self.out.branch("Muon_Haa4b_sel",       "b", lenVar="nMuon")
         self.out.branch("Muon_Haa4b_trig",      "b", lenVar="nMuon")
         self.out.branch("Muon_Haa4b_ovlp_iFat", "I", lenVar="nMuon")
@@ -86,9 +92,10 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Jet_Haa4b_ovlp_iFat", "I", lenVar="nJet")
         self.out.branch("Jet_Haa4b_ovlp_iMu",  "I", lenVar="nJet")
         self.out.branch("Jet_Haa4b_ovlp_iEle", "I", lenVar="nJet")
-        self.out.branch("Jet_genPartIdx",      "I", lenVar="nJet")
-        self.out.branch("Jet_genPart_pdgId",   "I", lenVar="nJet")
-        self.out.branch("Jet_genPart_dR",      "F", lenVar="nJet")
+        if self.isMC:
+            self.out.branch("Jet_genPartIdx",      "I", lenVar="nJet")
+            self.out.branch("Jet_genPart_pdgId",   "I", lenVar="nJet")
+            self.out.branch("Jet_genPart_dR",      "F", lenVar="nJet")
 
         ## Branches for counting selected objects, per event
         self.out.branch("Haa4b_nFatSel",      "I")
@@ -135,18 +142,19 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_FatHj_dR",     "F")
         self.out.branch("Haa4b_FatHj_jet_pt", "F")
         
-        self.out.branch("Haa4b_FatH_nBquarks",   "I")
-        self.out.branch("Haa4b_FatH_nCquarks",   "I")
-        self.out.branch("Haa4b_FatH_nLFquarks",  "I")
-        self.out.branch("Haa4b_FatHj_jet_nBquarks",  "I")
-        self.out.branch("Haa4b_FatHj_jet_nCquarks",  "I")
-        self.out.branch("Haa4b_FatHj_jet_nLFquarks", "I")
-        self.out.branch("Haa4b_FatX1_nBquarks",  "I")
-        self.out.branch("Haa4b_FatX1_nCquarks",  "I")
-        self.out.branch("Haa4b_FatX1_nLFquarks", "I")
-        self.out.branch("Haa4b_FatX2_nBquarks",  "I")
-        self.out.branch("Haa4b_FatX2_nCquarks",  "I")
-        self.out.branch("Haa4b_FatX2_nLFquarks", "I")
+        if self.isMC:
+            self.out.branch("Haa4b_FatH_nBQuarks",   "I")
+            self.out.branch("Haa4b_FatH_nCQuarks",   "I")
+            self.out.branch("Haa4b_FatH_nLFQuarks",  "I")
+            self.out.branch("Haa4b_FatHj_jet_nBQuarks",  "I")
+            self.out.branch("Haa4b_FatHj_jet_nCQuarks",  "I")
+            self.out.branch("Haa4b_FatHj_jet_nLFQuarks", "I")
+            self.out.branch("Haa4b_FatX1_nBQuarks",  "I")
+            self.out.branch("Haa4b_FatX1_nCQuarks",  "I")
+            self.out.branch("Haa4b_FatX1_nLFQuarks", "I")
+            self.out.branch("Haa4b_FatX2_nBQuarks",  "I")
+            self.out.branch("Haa4b_FatX2_nCQuarks",  "I")
+            self.out.branch("Haa4b_FatX2_nLFQuarks", "I")
 
         self.out.branch("Haa4b_FatH_tagHaa34b_v1",  "F")
         self.out.branch("Haa4b_FatH_tagHaa34b_v2a", "F")
@@ -154,6 +162,13 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_FatH_tagHaa34b_v1",  "F")
         self.out.branch("Haa4b_FatH_tagHaa34b_v2a", "F")
         self.out.branch("Haa4b_FatH_tagHaa34b_v2b", "F")
+
+        self.out.branch("Haa4b_FatH_tagHaa4b_v1",  "F")
+        self.out.branch("Haa4b_FatH_tagHaa4b_v2a", "F")
+        self.out.branch("Haa4b_FatH_tagHaa4b_v2b", "F")
+        self.out.branch("Haa4b_FatH_tagHaa4b_v1",  "F")
+        self.out.branch("Haa4b_FatH_tagHaa4b_v2a", "F")
+        self.out.branch("Haa4b_FatH_tagHaa4b_v2b", "F")
 
         self.out.branch("Haa4b_FatX_tagWZ_max",  "F")
         self.out.branch("Haa4b_FatX_tagTop_max", "F")
@@ -176,6 +191,9 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_dilep_SFOS",   "b")
 
         ## Branches for categorization and triggers, per event
+        self.out.branch("year",   "I")
+        self.out.branch("isData", "b")
+        self.out.branch("isMC",   "b")
         self.out.branch("Haa4b_isHad",      "b")
         self.out.branch("Haa4b_isLep",      "b")
         self.out.branch("Haa4b_isMu",       "b")
@@ -193,41 +211,50 @@ class Haa4bObjectSelectionProducer(Module):
         pass
 
     def analyze(self, event):
+        year      = int(self.year_str)
+        data_year = (2016*(event.run >= 264283) +
+                     0001*(event.run >= 293953) +
+                     0001*(event.run >= 312300) +
+                     0001*(event.run >  327564))
+        if (not self.isMC) and year != data_year:
+            print('\nWeird error! Nominal year %d, but run = %d implies year = %d.' % (year, event.run, data_year))
+
 
         CATS = ['gg0l','VBFjj','Vjj','ttHad','Zvv','Zll','Wlv','ttlv','ttll','2lSS','3l','other']
 
         ################################
         ## Set vectors for GEN particles
-        iGP = {}
-        iGP['H'] = event.GEN_H_idx
-        iGP['X1'] = event.GEN_X1_idx
-        iGP['X2'] = event.GEN_X2_idx
-        iGP['a1'] = event.GEN_a1_idx
-        iGP['a2'] = event.GEN_a2_idx
-        iGP['b11'] = event.GEN_b11_idx
-        iGP['b12'] = event.GEN_b12_idx
-        iGP['b21'] = event.GEN_b21_idx
-        iGP['b22'] = event.GEN_b22_idx
-        iGP['d11'] = event.GEN_d11_idx
-        iGP['d12'] = event.GEN_d12_idx
-        iGP['d13'] = event.GEN_d13_idx
-        iGP['d21'] = event.GEN_d21_idx
-        iGP['d22'] = event.GEN_d22_idx
-        iGP['d23'] = event.GEN_d23_idx
-        GPks = iGP.keys()
-        GPqs = [gpk for gpk in GPks if len(gpk) == 3]
-        has_GPs = (sum([(iGP[gpk] >= 0) for gpk in GPks]) > 0)
-        if has_GPs:
-            GPs = Collection(event, "GenPart")
-        vGP = {}
-        idGP = {}
-        for gpk in GPks:
-            vGP[gpk] = ROOT.TLorentzVector()
-            idGP[gpk] = -99
-            if iGP[gpk] >= 0:
-                gp = GPs[iGP[gpk]]
-                vGP[gpk].SetPtEtaPhiM(gp.pt, gp.eta, gp.phi, gp.mass)
-                idGP[gpk] = gp.pdgId
+        if self.isMC:
+            iGP = {}
+            iGP['H'] = event.GEN_H_idx
+            iGP['X1'] = event.GEN_X1_idx
+            iGP['X2'] = event.GEN_X2_idx
+            iGP['a1'] = event.GEN_a1_idx
+            iGP['a2'] = event.GEN_a2_idx
+            iGP['b11'] = event.GEN_b11_idx
+            iGP['b12'] = event.GEN_b12_idx
+            iGP['b21'] = event.GEN_b21_idx
+            iGP['b22'] = event.GEN_b22_idx
+            iGP['d11'] = event.GEN_d11_idx
+            iGP['d12'] = event.GEN_d12_idx
+            iGP['d13'] = event.GEN_d13_idx
+            iGP['d21'] = event.GEN_d21_idx
+            iGP['d22'] = event.GEN_d22_idx
+            iGP['d23'] = event.GEN_d23_idx
+            GPks = iGP.keys()
+            GPqs = [gpk for gpk in GPks if len(gpk) == 3]
+            has_GPs = (sum([(iGP[gpk] >= 0) for gpk in GPks]) > 0)
+            if has_GPs:
+                GPs = Collection(event, "GenPart")
+            vGP = {}
+            idGP = {}
+            for gpk in GPks:
+                vGP[gpk] = ROOT.TLorentzVector()
+                idGP[gpk] = -99
+                if iGP[gpk] >= 0:
+                    gp = GPs[iGP[gpk]]
+                    vGP[gpk].SetPtEtaPhiM(gp.pt, gp.eta, gp.phi, gp.mass)
+                    idGP[gpk] = gp.pdgId
         
 
         #######################
@@ -241,8 +268,11 @@ class Haa4bObjectSelectionProducer(Module):
         Fat_ovlp_iMu   = [-99] * nFatJets
         Fat_ovlp_iEle  = [-99] * nFatJets
         Fat_genPartIdx = [-99] * nFatJets
-        Fat_GP_pdgId   = [-99] * nFatJets
-        Fat_GP_dR      = [-99] * nFatJets
+        if self.isMC:
+            Fat_GP_pdgId  = [-99] * nFatJets
+            Fat_GP_dR     = [-99] * nFatJets
+            Fat_nBPartons = [-99] * nFatJets
+            Fat_nCPartons = [-99] * nFatJets
 
         max_Haa_score = -99.0
         max_WZ_tag  = -99.0
@@ -258,13 +288,17 @@ class Haa4bObjectSelectionProducer(Module):
             vFat = ROOT.TLorentzVector()
             vFat.SetPtEtaPhiM(fj.pt, fj.eta, fj.phi, fj.mass)
             ## Match FatJets to heavy GEN particles
-            min_GP_dR = 0.8
-            for gpk in ['H','X1','X2']:
-                if iGP[gpk] >= 0 and vGP[gpk].DeltaR(vFat) < min_GP_dR:
-                    min_GP_dR = vGP[gpk].DeltaR(vFat)
-                    Fat_genPartIdx[iFat] = iGP[gpk]
-                    Fat_GP_pdgId[iFat]   = idGP[gpk]
-                    Fat_GP_dR[iFat]      = vGP[gpk].DeltaR(vFat)
+            if self.isMC:
+                iGF = fj.genJetAK8Idx
+                Fat_nBPartons[iFat] = (event.GenJetAK8_nBPartons[iGF] if iGF >= 0 else -99)
+                Fat_nCPartons[iFat] = (event.GenJetAK8_nCPartons[iGF] if iGF >= 0 else -99)
+                min_GP_dR = 0.8
+                for gpk in ['H','X1','X2']:
+                    if iGP[gpk] >= 0 and vGP[gpk].DeltaR(vFat) < min_GP_dR:
+                        min_GP_dR = vGP[gpk].DeltaR(vFat)
+                        Fat_genPartIdx[iFat] = iGP[gpk]
+                        Fat_GP_pdgId[iFat]   = idGP[gpk]
+                        Fat_GP_dR[iFat]      = vGP[gpk].DeltaR(vFat)
             ## Flag FatJets in the HEM region
             if abs(fj.phi + 1.22) < 0.55 and fj.eta < -1.1:
                 Fat_HEM_bits[iFat] = 1
@@ -303,9 +337,12 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("FatJet_HEM",           Fat_HEM_bits)
         self.out.fillBranch("FatJet_Haa4b_sel",     Fat_sel_bits)
         self.out.fillBranch("FatJet_Haa4b_candH",   Fat_candH_bits)
-        self.out.fillBranch("FatJet_genPartIdx",    Fat_genPartIdx)
-        self.out.fillBranch("FatJet_genPart_pdgId", Fat_GP_pdgId)
-        self.out.fillBranch("FatJet_genPart_dR",    Fat_GP_dR)
+        if self.isMC:
+            self.out.fillBranch("FatJet_genPartIdx",    Fat_genPartIdx)
+            self.out.fillBranch("FatJet_genPart_pdgId", Fat_GP_pdgId)
+            self.out.fillBranch("FatJet_genPart_dR",    Fat_GP_dR)
+            self.out.fillBranch("FatJet_nBPartons",     Fat_nBPartons)
+            self.out.fillBranch("FatJet_nCPartons",     Fat_nCPartons)
         self.out.fillBranch("Haa4b_nFatSel", sum(Fat_sel_bits))
         self.out.fillBranch("Haa4b_nFatH",   sum(Fat_candH_bits))
 
@@ -476,8 +513,9 @@ class Haa4bObjectSelectionProducer(Module):
         Jet_ovlp_iMu  = [-99] * nJets
         Jet_ovlp_iEle = [-99] * nJets
         Jet_genPartIdx = [-99] * nJets
-        Jet_GP_pdgId   = [-99] * nJets
-        Jet_GP_dR      = [-99] * nJets
+        if self.isMC:
+            Jet_GP_pdgId   = [-99] * nJets
+            Jet_GP_dR      = [-99] * nJets
 
         vJets     = []
         iSelJets  = []
@@ -491,13 +529,14 @@ class Haa4bObjectSelectionProducer(Module):
             vJet.SetPtEtaPhiM(jet.pt, jet.eta, jet.phi, jet.mass)
             vJets.append(vJet)
             ## Match Jets to decay products of heavy GEN particles
-            min_GP_dR = 0.4
-            for gpq in GPqs:
-                if iGP[gpq] >= 0 and vGP[gpq].DeltaR(vJet) < min_GP_dR:
-                    min_GP_dR = vGP[gpq].DeltaR(vJet)
-                    Jet_genPartIdx[iJet] = iGP[gpq]
-                    Jet_GP_pdgId[iJet]   = idGP[gpq]
-                    Jet_GP_dR[iJet]      = vGP[gpq].DeltaR(vJet)
+            if self.isMC:
+                min_GP_dR = 0.4
+                for gpq in GPqs:
+                    if iGP[gpq] >= 0 and vGP[gpq].DeltaR(vJet) < min_GP_dR:
+                        min_GP_dR = vGP[gpq].DeltaR(vJet)
+                        Jet_genPartIdx[iJet] = iGP[gpq]
+                        Jet_GP_pdgId[iJet]   = idGP[gpq]
+                        Jet_GP_dR[iJet]      = vGP[gpq].DeltaR(vJet)
             ## Flag Jets in the HEM region
             if abs(jet.phi + 1.22) < 0.45 and jet.eta < -1.2 and jet.eta > -3.2:
                 Jet_HEM_bits[iJet] = 1
@@ -567,8 +606,9 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Jet_Haa4b_ovlp_iMu",  Jet_ovlp_iMu)
         self.out.fillBranch("Jet_Haa4b_ovlp_iEle", Jet_ovlp_iEle)
         self.out.fillBranch("Jet_genPartIdx",      Jet_genPartIdx)
-        self.out.fillBranch("Jet_genPart_pdgId",   Jet_GP_pdgId)
-        self.out.fillBranch("Jet_genPart_dR",      Jet_GP_dR)
+        if self.isMC:
+            self.out.fillBranch("Jet_genPart_pdgId",   Jet_GP_pdgId)
+            self.out.fillBranch("Jet_genPart_dR",      Jet_GP_dR)
         self.out.fillBranch("Haa4b_nJetSel",       sum(Jet_sel_bits))
         self.out.fillBranch("Haa4b_nJetBtag",      sum(Jet_btag_bits))
         self.out.fillBranch("Haa4b_nJetBtagNonH",  sum(Jet_btag_nonH_bits))
@@ -624,26 +664,27 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Haa4b_FatX1_pt", vCandsX[0].Pt()         if len(iCandsX) > 0 else -99)
         self.out.fillBranch("Haa4b_FatX2_pt", vCandsX[1].Pt()         if len(iCandsX) > 1 else -99)
 
-        self.out.fillBranch("Haa4b_FatH_nBquarks",   sum([(vGP[i].DeltaR(vCandH) < 0.8 and abs(idGP[i]) == 5) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatH_nCquarks",   sum([(vGP[i].DeltaR(vCandH) < 0.8 and abs(idGP[i]) == 4) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatH_nLFquarks",  sum([(vGP[i].DeltaR(vCandH) < 0.8 and abs(idGP[i]) <= 3) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatHj_jet_nBquarks",  sum([((vGP[i].DeltaR(vJetCandH) < 0.4 and abs(idGP[i]) == 5)
+        if self.isMC:
+            self.out.fillBranch("Haa4b_FatH_nBQuarks",   sum([(vGP[i].DeltaR(vCandH) < 0.8 and abs(idGP[i]) == 5) for i in GPqs]))
+            self.out.fillBranch("Haa4b_FatH_nCQuarks",   sum([(vGP[i].DeltaR(vCandH) < 0.8 and abs(idGP[i]) == 4) for i in GPqs]))
+            self.out.fillBranch("Haa4b_FatH_nLFQuarks",  sum([(vGP[i].DeltaR(vCandH) < 0.8 and abs(idGP[i]) <= 3) for i in GPqs]))
+            self.out.fillBranch("Haa4b_FatHj_jet_nBQuarks",  sum([((vGP[i].DeltaR(vJetCandH) < 0.4 and abs(idGP[i]) == 5)
                                                                if iJetCandH >= 0 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatHj_jet_nCquarks",  sum([((vGP[i].DeltaR(vJetCandH) < 0.4 and abs(idGP[i]) == 4)
+            self.out.fillBranch("Haa4b_FatHj_jet_nCQuarks",  sum([((vGP[i].DeltaR(vJetCandH) < 0.4 and abs(idGP[i]) == 4)
                                                                if iJetCandH >= 0 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatHj_jet_nLFquarks", sum([((vGP[i].DeltaR(vJetCandH) < 0.4 and abs(idGP[i]) <= 3)
+            self.out.fillBranch("Haa4b_FatHj_jet_nLFQuarks", sum([((vGP[i].DeltaR(vJetCandH) < 0.4 and abs(idGP[i]) <= 3)
                                                                if iJetCandH >= 0 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatX1_nBquarks",  sum([((vGP[i].DeltaR(vCandsX[0]) < 0.8 and abs(idGP[i]) == 5)
+            self.out.fillBranch("Haa4b_FatX1_nBQuarks",  sum([((vGP[i].DeltaR(vCandsX[0]) < 0.8 and abs(idGP[i]) == 5)
                                                            if len(iCandsX) > 0 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatX1_nCquarks",  sum([((vGP[i].DeltaR(vCandsX[0]) < 0.8 and abs(idGP[i]) == 4)
+            self.out.fillBranch("Haa4b_FatX1_nCQuarks",  sum([((vGP[i].DeltaR(vCandsX[0]) < 0.8 and abs(idGP[i]) == 4)
                                                            if len(iCandsX) > 0 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatX1_nLFquarks", sum([((vGP[i].DeltaR(vCandsX[0]) < 0.8 and abs(idGP[i]) <= 3)
+            self.out.fillBranch("Haa4b_FatX1_nLFQuarks", sum([((vGP[i].DeltaR(vCandsX[0]) < 0.8 and abs(idGP[i]) <= 3)
                                                            if len(iCandsX) > 0 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatX2_nBquarks",  sum([((vGP[i].DeltaR(vCandsX[1]) < 0.8 and abs(idGP[i]) == 5)
+            self.out.fillBranch("Haa4b_FatX2_nBQuarks",  sum([((vGP[i].DeltaR(vCandsX[1]) < 0.8 and abs(idGP[i]) == 5)
                                                            if len(iCandsX) > 1 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatX2_nCquarks",  sum([((vGP[i].DeltaR(vCandsX[1]) < 0.8 and abs(idGP[i]) == 4)
+            self.out.fillBranch("Haa4b_FatX2_nCQuarks",  sum([((vGP[i].DeltaR(vCandsX[1]) < 0.8 and abs(idGP[i]) == 4)
                                                            if len(iCandsX) > 1 else 0) for i in GPqs]))
-        self.out.fillBranch("Haa4b_FatX2_nLFquarks", sum([((vGP[i].DeltaR(vCandsX[1]) < 0.8 and abs(idGP[i]) <= 3)
+            self.out.fillBranch("Haa4b_FatX2_nLFQuarks", sum([((vGP[i].DeltaR(vCandsX[1]) < 0.8 and abs(idGP[i]) <= 3)
                                                            if len(iCandsX) > 1 else 0) for i in GPqs]))
 
         self.out.fillBranch("Haa4b_FatHj_dR", vCandH.DeltaR(vJetCandH) if iJetCandH >= 0 else -99)
@@ -655,6 +696,13 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Haa4b_FatH_tagHaa34b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa34b_score  if iCandH >= 0 else -99)
         self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa34b_score if iCandH >= 0 else -99)
         self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa34b_score if iCandH >= 0 else -99)
+
+        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa4b_score  if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa4b_score if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa4b_score if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa4b_score  if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa4b_score if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa4b_score if iCandH >= 0 else -99)
 
         self.out.fillBranch("Haa4b_FatX_tagWZ_max",  max_WZ_tag)
         self.out.fillBranch("Haa4b_FatX_tagTop_max", max_top_tag)
@@ -749,6 +797,9 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Haa4b_cat_idx", cat_idx)
         self.out.fillBranch("Haa4b_nCats",   nCats)
 
+        self.out.fillBranch("year",   year)
+        self.out.fillBranch("isData", (not self.isMC))
+        self.out.fillBranch("isMC",   self.isMC)
         self.out.fillBranch("Haa4b_isHad", (iCandH >= 0 and nTrigLeps == 0))
         self.out.fillBranch("Haa4b_isLep", (iCandH >= 0 and nTrigLeps >= 1 and nTrigLepsOvlpH == 0))
         self.out.fillBranch("Haa4b_isMu",  (iCandH >= 0 and len(iTrigMus) >= 1 and nTrigLepsOvlpH == 0))
@@ -784,4 +835,9 @@ class Haa4bObjectSelectionProducer(Module):
         ## All done!
         return True
 
-Haa4bObjectSelectionBranches = lambda: Haa4bObjectSelectionProducer()
+Haa4bObjectSelectionBranches2018MC   = lambda: Haa4bObjectSelectionProducer(True,  '2018')
+Haa4bObjectSelectionBranches2018Data = lambda: Haa4bObjectSelectionProducer(False, '2018')
+Haa4bObjectSelectionBranches2017MC   = lambda: Haa4bObjectSelectionProducer(True,  '2017')
+Haa4bObjectSelectionBranches2017Data = lambda: Haa4bObjectSelectionProducer(False, '2017')
+Haa4bObjectSelectionBranches2016MC   = lambda: Haa4bObjectSelectionProducer(True,  '2016')
+Haa4bObjectSelectionBranches2016Data = lambda: Haa4bObjectSelectionProducer(False, '2016')
