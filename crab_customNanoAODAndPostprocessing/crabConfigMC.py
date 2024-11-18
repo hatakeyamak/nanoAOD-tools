@@ -16,7 +16,7 @@ config.General.transferOutputs = True
 config.General.transferLogs = True
 
 config.JobType.pluginName = 'Analysis'
-config.JobType.psetName = 'Nano_MC_addHto4bPlus_crab_cfg.py' #'Nano_MC_addHto4bPlus_crab_cfg.py'
+config.JobType.psetName = 'Nano_MC_addHto4bPlus_cfg.py' #'Nano_MC_addHto4bPlus_crab_cfg.py'
 config.JobType.scriptExe = 'crab_script.sh'
 config.JobType.inputFiles = ['crab_script.sh', 'example_postproc_1.py']
 config.JobType.outputFiles = ['PNet_v1.root', 'PNet_v1_Skim.root']
