@@ -58,7 +58,7 @@ ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/
 #echo "================= Dumping PSet END ===================="
 
 #python crab_script.py $1
-#python example_postproc_1.py $1
+#python Hto4b_postproc_MC.py $1
 #echo 'cmsRun Nano_MC_addHto4bPlus_crab_cfg.py'
 #cmsRun Nano_MC_addHto4bPlus_crab_cfg.py
 echo 'cmsRun -j FrameworkJobReport.xml -p PSet.py'
@@ -74,12 +74,12 @@ ls
 echo "ls PNet_v1*.root"
 ls PNet_v1*.root
 
-echo "python example_postproc_1.py"
-python example_postproc_1.py 
-echo "DONE python example_postproc_1.py"
+echo "python Hto4b_postproc_MC.py"
+python Hto4b_postproc_MC.py 
+echo "DONE python Hto4b_postproc_MC.py"
 
-echo "After python example_postproc_1.py PWD: " $PWD 
-echo "After python example_postproc_1.py ls:"
+echo "After python Hto4b_postproc_MC.py PWD: " $PWD 
+echo "After python Hto4b_postproc_MC.py ls:"
 ls
 
 echo "crab_script.sh Done"
