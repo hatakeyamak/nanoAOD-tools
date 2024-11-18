@@ -512,8 +512,8 @@ class Haa4bObjectSelectionProducer(Module):
         Jet_ovlp_iFat = [-99] * nJets
         Jet_ovlp_iMu  = [-99] * nJets
         Jet_ovlp_iEle = [-99] * nJets
-        Jet_genPartIdx = [-99] * nJets
         if self.isMC:
+            Jet_genPartIdx = [-99] * nJets
             Jet_GP_pdgId   = [-99] * nJets
             Jet_GP_dR      = [-99] * nJets
 
@@ -605,8 +605,8 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Jet_Haa4b_ovlp_iFat", Jet_ovlp_iFat)
         self.out.fillBranch("Jet_Haa4b_ovlp_iMu",  Jet_ovlp_iMu)
         self.out.fillBranch("Jet_Haa4b_ovlp_iEle", Jet_ovlp_iEle)
-        self.out.fillBranch("Jet_genPartIdx",      Jet_genPartIdx)
         if self.isMC:
+            self.out.fillBranch("Jet_genPartIdx",      Jet_genPartIdx)
             self.out.fillBranch("Jet_genPart_pdgId",   Jet_GP_pdgId)
             self.out.fillBranch("Jet_genPart_dR",      Jet_GP_dR)
         self.out.fillBranch("Haa4b_nJetSel",       sum(Jet_sel_bits))
