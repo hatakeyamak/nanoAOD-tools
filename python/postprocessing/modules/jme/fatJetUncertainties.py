@@ -320,10 +320,16 @@ class fatJetUncertaintiesProducer(Module):
                 self.out.branch("%s_msoftdrop_corr_JMR" % self.jetBranchName,
                                 "F",
                                 lenVar=self.lenVar)
-            if self.applyMsdJMS:
-                self.out.branch("%s_msoftdrop_corr_JMS" % self.jetBranchName,
-                                "F",
-                                lenVar=self.lenVar)
+            #if self.applyMsdJMS:
+            self.out.branch("%s_msoftdrop_corr_JMS" % self.jetBranchName,
+                            "F",
+                            lenVar=self.lenVar)
+            self.out.branch("%s_msoftdrop_corr_JMSUp" % self.jetBranchName,
+                            "F",
+                            lenVar=self.lenVar)
+            self.out.branch("%s_msoftdrop_corr_JMSDown" % self.jetBranchName,
+                            "F",
+                            lenVar=self.lenVar)
             self.out.branch("%s_msoftdrop_corr_PUPPI" % self.jetBranchName,
                             "F",
                             lenVar=self.lenVar)
@@ -462,6 +468,8 @@ class fatJetUncertaintiesProducer(Module):
             jets_msdcorr_nom = []
             jets_msdcorr_corr_JMR = []
             jets_msdcorr_corr_JMS = []
+            jets_msdcorr_corr_JMSUp = []
+            jets_msdcorr_corr_JMSDown = []
             jets_msdcorr_corr_PUPPI = []
             jets_msdcorr_jerUp = {}
             jets_msdcorr_jerDown = {}
@@ -681,6 +689,8 @@ class fatJetUncertaintiesProducer(Module):
                      jet_msdcorr_jmrDownVal) = (1, 1, 1)
 
                 jets_msdcorr_corr_JMS.append(jmsMsdNomVal)
+                jets_msdcorr_corr_JMSUp.append(jmsMsdUpVal)
+                jets_msdcorr_corr_JMSDown.append(jmsMsdDownVal)
                 jets_msdcorr_corr_JMR.append(jet_msdcorr_jmrNomVal)
 
                 if not self.isData: 
@@ -913,9 +923,13 @@ class fatJetUncertaintiesProducer(Module):
                                 jets_msdcorr_raw)
             self.out.fillBranch("%s_msoftdrop_nom" % self.jetBranchName,
                                 jets_msdcorr_nom)
-            if self.applyMsdJMS:
-                self.out.fillBranch("%s_msoftdrop_corr_JMS" % self.jetBranchName,
-                                    jets_msdcorr_corr_JMS)
+            #if self.applyMsdJMS:
+            self.out.fillBranch("%s_msoftdrop_corr_JMS" % self.jetBranchName,
+                                jets_msdcorr_corr_JMS)
+            self.out.fillBranch("%s_msoftdrop_corr_JMSUp" % self.jetBranchName,
+                                jets_msdcorr_corr_JMSUp)
+            self.out.fillBranch("%s_msoftdrop_corr_JMSDown" % self.jetBranchName,
+                                jets_msdcorr_corr_JMSDown)            
             if self.applyMsdJMR:
                 self.out.fillBranch("%s_msoftdrop_corr_JMR" % self.jetBranchName,
                                     jets_msdcorr_corr_JMR)
