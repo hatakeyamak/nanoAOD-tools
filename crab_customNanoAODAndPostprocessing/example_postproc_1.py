@@ -4,7 +4,8 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetHelperRun2 impor
 from PhysicsTools.NanoAODTools.postprocessing.modules.jme.jetmetUncertainties import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.PrefireCorr import *
-from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
+#from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
+from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducerUL import *
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 from importlib import import_module
 import os
@@ -12,8 +13,11 @@ import sys
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True 
 
-# this takes care of converting the input files from CRAB
-#from PhysicsTools.NanoAODTools.postprocessing.framework.crabhelper import inputFiles, runsAndLumis
+runLocally = False
+
+if not runLocally:
+    # this takes care of converting the input files from CRAB
+    from PhysicsTools.NanoAODTools.postprocessing.framework.crabhelper import inputFiles, runsAndLumis
 
 # soon to be deprecated
 # new way of using jme uncertainty
@@ -33,12 +37,15 @@ jmeCorrectionsAK8 = createJMECorrector(
     isMC          = True, 
     dataYear      = "UL2018", 
     runPeriod     = "D", 
-    jesUncert     = "Total", 
+    jesUncert     = "Total", # Options: "Total", "All"
     jetType       = "AK8PFPuppi", # AK8PFPuppi, AK4PFchs
     noGroom       = False,
+    applyWJMS     = False, 
+    applyMsdJMS   = False,
+    applyMsdJMR   = False,
     applySmearing = True,
     isFastSim     = False,
-    applyHEMfix   = False,
+    applyHEMfix   = True, # <<<< True for 2018: additional "HEMIssue" uncertainty 
     splitJER      = False,
     saveMETUncs   = ['T1', 'T1Smear'])
 
@@ -51,7 +58,7 @@ jmeCorrectionsAK4 = createJMECorrector(
     noGroom       = False,
     applySmearing = True,
     isFastSim     = False,
-    applyHEMfix   = False,
+    applyHEMfix   = True, # <<<< True for 2018: additional "HEMIssue" uncertainty
     splitJER      = False,
     saveMETUncs   = ['T1', 'T1Smear'])
 
@@ -76,7 +83,7 @@ l1PrefirCorr2017 = lambda: PrefCorr(
 btagSF2018 = lambda: btagSFProducer(
     era = 'UL2018', 
     algo='deepjet', 
-    selectedWPs=['M', 'shape_corr'],
+    selectedWPs=['M'], #['M', 'shape_corr'],
     sfFileName=None, 
     verbose=0, 
     jesSystsForShape=["jes"]
@@ -86,9 +93,13 @@ btagSF2018 = lambda: btagSFProducer(
 #fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/test/PNet_v1.root"] 
 #fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/NanoTestPost/240921_092131/0000/PNet_v1_1.root"] 
 #fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/2017/2BFC55D0-269D-5045-8CF4-6174A5DEA5E7.root"] # 2017 sample
-fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_HtoAA_MH-125_MA-50_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_1k.root"]
-#fnames = ["PNet_v1.root"] 
+#fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_HtoAA_MH-125_MA-50_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_1k.root"]
+fnames = ["PNet_v1.root"] 
 ##fnames = inputFiles()
+
+if not runLocally:
+    print("example_postproc_1.py:: inputFiles() ", type(inputFiles()), ' : ',  inputFiles())
+    print("example_postproc_1.py:: runsAndLumis ", type(runsAndLumis()), ' : ', runsAndLumis())
 
 # p=PostProcessor(".",fnames,"Jet_pt>150","",[jetmetUncertainties2016(),exampleModuleConstr()],provenance=True)
 #p = PostProcessor(".", fnames, "Jet_pt>150", "", [
@@ -110,8 +121,8 @@ p = PostProcessor(
         #l1PrefirCorr2017(),
         btagSF2018()
         ], 
-    provenance=True,
-    fwkJobReport=True,
+    #provenance=True,
+    #fwkJobReport=True,
     #jsonInput=runsAndLumis()
     )
 p.run()

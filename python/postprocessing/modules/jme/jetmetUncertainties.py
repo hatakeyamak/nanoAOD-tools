@@ -97,6 +97,8 @@ class jetmetUncertaintiesProducer(Module):
         # Text files are now tarred so must extract first into temporary
         # directory (gets deleted during python memory management at
         # script exit)
+        jesInputFileName = self.jesInputArchivePath + globalTag + ".tgz" if not archive else self.jesInputArchivePath + archive + ".tgz"
+        print('fatjetUncertainties.py:: jesInputFileName: ',jesInputFileName)        
         self.jesArchive = tarfile.open(
             self.jesInputArchivePath + globalTag +
             ".tgz", "r:gz") if not archive else tarfile.open(
