@@ -1,5 +1,5 @@
-## This is not meant to be run locally
-##
+#this is not mean to be run locally
+#
 echo Check if TTY
 if [ "`tty`" != "not a tty" ]; then
   echo "YOU SHOULD NOT RUN THIS IN INTERACTIVE, IT DELETES YOUR LOCAL FILES"
@@ -59,7 +59,7 @@ kCrabJob=$1
 #echo "================= Dumping PSet END ===================="
 
 #python crab_script.py $1
-#python Hto4b_postproc_MC.py $1
+#python example_postproc_1.py $1
 #echo 'cmsRun Nano_MC_addHto4bPlus_crab_cfg.py'
 #cmsRun Nano_MC_addHto4bPlus_crab_cfg.py
 echo 'cmsRun -j FrameworkJobReport.xml -p PSet.py'
@@ -75,12 +75,12 @@ ls
 echo "ls PNet_v1*.root"
 ls PNet_v1*.root
 
-echo "python Hto4b_postproc_MC.py ${kCrabJob}"
-python Hto4b_postproc_MC.py ${kCrabJob}
-echo "DONE python Hto4b_postproc_MC.py ${kCrabJob}"
+echo "python example_postproc_1.py ${kCrabJob} "
+python example_postproc_1.py ${kCrabJob}
+echo "DONE python example_postproc_1.py ${kCrabJob} "
 
-echo "After python Hto4b_postproc_MC.py PWD: " $PWD 
-echo "After python Hto4b_postproc_MC.py ls:"
+echo "After python example_postproc_1.py PWD: " $PWD 
+echo "After python example_postproc_1.py ls:"
 ls
 
 echo "crab_script.sh Done"
