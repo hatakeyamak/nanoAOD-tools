@@ -46,6 +46,7 @@ ls
 echo "ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02 : "
 ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02
 
+kCrabJob=$1
 
 # If you are curious, you can have a look at the tweaked PSet. This however won't give you any information...
 #echo "================= PSet.py file =================="
@@ -74,9 +75,9 @@ ls
 echo "ls PNet_v1*.root"
 ls PNet_v1*.root
 
-echo "python example_postproc_1.py"
-python example_postproc_1.py 
-echo "DONE python example_postproc_1.py"
+echo "python example_postproc_1.py ${kCrabJob} "
+python example_postproc_1.py ${kCrabJob}
+echo "DONE python example_postproc_1.py ${kCrabJob} "
 
 echo "After python example_postproc_1.py PWD: " $PWD 
 echo "After python example_postproc_1.py ls:"
