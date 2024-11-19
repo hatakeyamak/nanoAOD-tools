@@ -20,7 +20,8 @@ SKIM_FAT          = True  ## Discard events with 0 AK8 jets
 SKIM_FAT_SEL      = True  ## Discard events with 0 selected AK8 jets
 SKIM_FAT_CAND     = True  ## Discard events with 0 Haa4b candidate AK8 jets
 
-
+import os
+import sys
 import FWCore.ParameterSet.Config as cms
 from Configuration.Eras.Era_Run2_2018_cff import Run2_2018
 from Configuration.Eras.Modifier_run2_nanoAOD_106Xv2_cff import run2_nanoAOD_106Xv2
@@ -143,8 +144,8 @@ process.NANOAODSIMoutput = cms.OutputModule("NanoAODOutputModule",
         dataTier = cms.untracked.string('NANOAODSIM'),
         filterName = cms.untracked.string('')
     ),
-    #fileName = cms.untracked.string(out_file),
-    fileName = cms.untracked.string('PNet_v1.root'),
+    # fileName = cms.untracked.string(out_file),  ## Unique, local file name
+    fileName = cms.untracked.string('PNet_v1.root'),  ## Basic name for CRAB jobs
     outputCommands = process.NANOAODSIMEventContent.outputCommands
 )
 

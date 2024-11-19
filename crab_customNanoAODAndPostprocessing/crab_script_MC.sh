@@ -1,5 +1,5 @@
-#this is not mean to be run locally
-#
+## This is not meant to be run locally
+##
 echo Check if TTY
 if [ "`tty`" != "not a tty" ]; then
   echo "YOU SHOULD NOT RUN THIS IN INTERACTIVE, IT DELETES YOUR LOCAL FILES"
@@ -46,6 +46,7 @@ ls
 echo "ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02 : "
 ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02
 
+kCrabJob=$1
 
 # If you are curious, you can have a look at the tweaked PSet. This however won't give you any information...
 #echo "================= PSet.py file =================="
@@ -74,9 +75,9 @@ ls
 echo "ls PNet_v1*.root"
 ls PNet_v1*.root
 
-echo "python Hto4b_postproc_MC.py"
-python Hto4b_postproc_MC.py 
-echo "DONE python Hto4b_postproc_MC.py"
+echo "python Hto4b_postproc_MC.py ${kCrabJob}"
+python Hto4b_postproc_MC.py ${kCrabJob}
+echo "DONE python Hto4b_postproc_MC.py ${kCrabJob}"
 
 echo "After python Hto4b_postproc_MC.py PWD: " $PWD 
 echo "After python Hto4b_postproc_MC.py ls:"
