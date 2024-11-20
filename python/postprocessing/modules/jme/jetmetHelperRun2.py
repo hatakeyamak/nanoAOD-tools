@@ -114,7 +114,7 @@ jmsMsdValues = {
     '2017': [0.982, 0.978, 0.986],
     # Use 2017 values for 2018 until 2018 are released
     '2018': [0.982, 0.978, 0.986],
-    'UL2016_preVFP': [1.000, 1.000, 1.000],  # placeholder
+    'UL2016_preVFP': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'],  # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044
     'UL2016': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'], # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044
     'UL2017': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'], # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044
     'UL2018': ['PhysicsTools/NanoAODTools/data/jme/Substructure_jmssf_UL_PhysicsResultsDP23044.json'] # JMS(pT, eta) for Ultra-legacy Run2 data: https://twiki.cern.ch/twiki/bin/view/CMSPublic/PhysicsResultsDP23044

@@ -12,31 +12,65 @@ import os
 import sys
 import ROOT
 ROOT.PyConfig.IgnoreCommandLineOptions = True 
+import re
 
-runLocally = False
+
+runLocally = True #False
+
+  
+RunEraForMC = { #
+    'UL2016_preVFP': 'E',
+    'UL2016': 'G',
+    'UL2017': 'F',
+    'UL2018': 'D',      
+}
+
+isMC = True
+DataYear  = 'UL2018'
+RunPeriod = 'D'
 
 if not runLocally:
     # this takes care of converting the input files from CRAB
     from PhysicsTools.NanoAODTools.postprocessing.framework.crabhelper import inputFiles, runsAndLumis
 
-# soon to be deprecated
-# new way of using jme uncertainty
+    crabFiles = inputFiles()
+    for iFile in range(0, len(crabFiles)):
+        #print("\n\nexample_postproc_1.py:: crabFiles[iFile] (", type(crabFiles[iFile]), ') : ', crabFiles[iFile])
+        # file name:
+        # /store/data/Run2018A/JetHT/MINIAOD/UL2018_MiniAODv2_GT36-v1/2820000/06B31097-D7BB-A54A-80EE-C2823A835177.root
+        # /store/mc/RunIISummer20UL18MiniAODv2/SUSY_ZH_ZToAll_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/MINIAODSIM/106X_upgrade2018_realistic_v16_L1v1-v1/2520000/0EA35ABE-277F-6543-8296-CE3476695505.root
+
+        dataType = re.search('/store/(?P<DataType>\w+)/', crabFiles[iFile]).group('DataType') # '/store/mc/'
+        isMC = True if dataType.lower() == 'mc' else False
+
+        if not isMC:
+            r_ = re.search('Run(?P<DataYear>\d{4})(?P<RunPeriod>[a-zA-Z])', crabFiles[iFile]) # '/store/data/Run2018A/'
+            DataYear  = r_.group('DataYear')
+            RunPeriod = r_.group('RunPeriod')
+        else:
+            r_ = re.search('RunIISummer20UL(?P<DataYear>\d{2})MiniAOD', crabFiles[iFile]) # '/store/mc/RunIISummer20UL18MiniAODv2/'
+            DataYear  = '20%s' % (r_.group('DataYear'))
+            if 'APV' in crabFiles[iFile]:
+                DataYear += '_preVFP'
+
+        if 'UL' in crabFiles[iFile]:
+            DataYear = 'UL%s' % (DataYear)
+
+        if isMC:
+            RunPeriod = RunEraForMC[DataYear]
+
+        print('example_postproc_1.py:: ', crabFiles[iFile], DataYear, RunPeriod)
+        break
+
+    print('example_postproc_1.py:: DataYear: ', DataYear, ', RunPeriod: ', RunPeriod)
 
 
-# Function parameters
-# (isMC=True, dataYear=2016, runPeriod="B", jesUncert="Total", redojec=False, jetType = "AK4PFchs", noGroom=False)
-# All other parameters will be set in the helper module
 
-#jmeCorrections = createJMECorrector(
-#    True, "2016", "B", "Total", True, "AK4PFchs", False)
-#jmeCorrections = createJMECorrector(
-#    True, "2018", "D", "Total", True, "AK8PFchs", False)
-#jmeCorrections = createJMECorrector(
-#    True, "UL2018", "D", "Total", "AK8PFchs", False)
+
 jmeCorrectionsAK8 = createJMECorrector(
-    isMC          = True, 
-    dataYear      = "UL2018", 
-    runPeriod     = "D", 
+    isMC          = isMC, 
+    dataYear      = DataYear, 
+    runPeriod     = RunPeriod, 
     jesUncert     = "Total", # Options: "Total", "All"
     jetType       = "AK8PFPuppi", # AK8PFPuppi, AK4PFchs
     noGroom       = False,
@@ -50,9 +84,9 @@ jmeCorrectionsAK8 = createJMECorrector(
     saveMETUncs   = ['T1', 'T1Smear'])
 
 jmeCorrectionsAK4 = createJMECorrector(
-    isMC          = True, 
-    dataYear      = "UL2018", 
-    runPeriod     = "D", 
+    isMC          = isMC, 
+    dataYear      = DataYear, 
+    runPeriod     = RunPeriod, 
     jesUncert     = "Total", 
     jetType       = "AK4PFchs", # AK8PFPuppi, AK4PFchs
     noGroom       = False,
@@ -62,65 +96,66 @@ jmeCorrectionsAK4 = createJMECorrector(
     splitJER      = False,
     saveMETUncs   = ['T1', 'T1Smear'])
 
-## PU weights
-puWeights = puWeight_UL2018
 
-## Prefiring corrections
+modulesToRun = [
+    jmeCorrectionsAK8(),
+    jmeCorrectionsAK4()
+]
 
-'''
-l1PrefirCorr2017 = lambda: PrefCorr(
-    jetroot="L1prefiring_jetpt_2017BtoF.root",
-    jetmapname="L1prefiring_jetpt_2017BtoF",
-    photonroot="L1prefiring_photonpt_2017BtoF.root",
-    photonmapname="L1prefiring_photonpt_2017BtoF",
-    branchnames=[
-        "PrefireWeight", "PrefireWeight_Up", "PrefireWeight_Down"
-    ]
-)
-'''
+if isMC:
+    ## PU weights
+    puWeights = None
+    if   '16' in DataYear:
+        puWeights = puWeight_UL2016
+    elif '17' in DataYear:
+        puWeights = puWeight_UL2017
+    elif '18' in DataYear:
+        puWeights = puWeight_UL2018
+    else:
+        print('example_postproc_1.py:: puWeights DataYear ', DataYear, ' not compatible *** ERROR ***')
+        exit(0)
+        
 
-# b-tag SF producer
-btagSF2018 = lambda: btagSFProducer(
-    era = 'UL2018', 
-    algo='deepjet', 
-    selectedWPs=['M'], #['M', 'shape_corr'],
-    sfFileName=None, 
-    verbose=0, 
-    jesSystsForShape=["jes"]
-)
+    ## Prefiring corrections
+    '''
+    l1PrefirCorr2017 = lambda: PrefCorr(
+        jetroot="L1prefiring_jetpt_2017BtoF.root",
+        jetmapname="L1prefiring_jetpt_2017BtoF",
+        photonroot="L1prefiring_photonpt_2017BtoF.root",
+        photonmapname="L1prefiring_photonpt_2017BtoF",
+        branchnames=[
+            "PrefireWeight", "PrefireWeight_Up", "PrefireWeight_Down"
+        ]
+    )
+    '''
 
-#fnames = ["/eos/cms/store/mc/RunIISummer16NanoAODv5/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8/NANOAODSIM/PUMoriond17_Nano1June2019_102X_mcRun2_asymptotic_v7_ext2-v1/120000/FF69DF6E-2494-F543-95BF-F919B911CD23.root"]
-#fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/test/PNet_v1.root"] 
-#fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/NanoTestPost/240921_092131/0000/PNet_v1_1.root"] 
-#fnames = ["/eos/cms/store/user/ssawant/NanoPost/SUSY_GluGluH_01J_HToAATo4B_Pt150_M-20_TuneCP5_13TeV_madgraph_pythia8/2017/2BFC55D0-269D-5045-8CF4-6174A5DEA5E7.root"] # 2017 sample
-#fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_HtoAA_MH-125_MA-50_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_1k.root"]
+    # b-tag SF producer
+    btagSF = lambda: btagSFProducer(
+        era = DataYear, 
+        algo='deepjet', 
+        selectedWPs=['M'], #['M', 'shape_corr'],
+        sfFileName=None, 
+        verbose=0, 
+        jesSystsForShape=["jes"]
+    )
+
+    modulesToRun.extend([
+        puWeights(),
+        btagSF()
+    ])
+
+
 fnames = ["PNet_v1.root"] 
-##fnames = inputFiles()
+if runLocally:
+    fnames = ["/afs/cern.ch/work/s/ssawant/private/htoaa/NanoAODProduction_wPNetHToAATo4B/CMSSW_10_6_30/src/PhysicsTools/NanoAOD/output/HtoAA_addHto4bPlus_HtoAA_MH-125_MA-50_Pt170_Eta2p4_Msoft10_Xbb0p6_skimFatCand_1k.root"]
 
-if not runLocally:
-    print("example_postproc_1.py:: inputFiles() ", type(inputFiles()), ' : ',  inputFiles())
-    print("example_postproc_1.py:: runsAndLumis ", type(runsAndLumis()), ' : ', runsAndLumis())
 
-# p=PostProcessor(".",fnames,"Jet_pt>150","",[jetmetUncertainties2016(),exampleModuleConstr()],provenance=True)
-#p = PostProcessor(".", fnames, "Jet_pt>150", "", [
-#                  jmeCorrections(), exampleModuleConstr()], provenance=True)
-#p = PostProcessor(".", 
-#                  fnames, "",  
-#                  modules=[jmeCorrections()], 
-#                  provenance=True,
-#                  fwkJobReport=True,
-#                  jsonInput=runsAndLumis())
+
 p = PostProcessor(
     outputDir=".", 
     inputFiles=fnames, 
     #cut="",  
-    modules=[
-        jmeCorrectionsAK8(),
-        jmeCorrectionsAK4(),
-        puWeights(),
-        #l1PrefirCorr2017(),
-        btagSF2018()
-        ], 
+    modules=modulesToRun, 
     #provenance=True,
     #fwkJobReport=True,
     #jsonInput=runsAndLumis()

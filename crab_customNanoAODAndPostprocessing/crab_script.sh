@@ -15,36 +15,11 @@ echo "PYTHON_PATH: " $PYTHON_PATH
 echo "PWD: " $PWD 
 echo "ls: " 
 ls
-echo "ls -LR: " 
-ls -LR
-echo "ls lib:"
-ls lib
-echo "ls src:"
-ls src
-echo "ls module:"
-ls module
-echo "ls python:"
-ls python
-
-#rm -rf $CMSSW_BASE/lib/
-#rm -rf $CMSSW_BASE/src/
-#rm -rf $CMSSW_BASE/module/
-#rm -rf $CMSSW_BASE/python/
-#mv lib $CMSSW_BASE/lib
-#mv src $CMSSW_BASE/src
-#mv module $CMSSW_BASE/module
-#mv python $CMSSW_BASE/python
 
 echo Found Proxy in: $X509_USER_PROXY
-
 echo "Here there are all the input arguments"
 echo $@
 echo "argument 1: " $1
-echo "PWD: " $PWD 
-echo ls
-ls
-echo "ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02 : "
-ls CMSSW_10_6_30/src/RecoBTag/Combined/data/ParticleNetAK8/Hto4bMassRegressionA/V02
 
 kCrabJob=$1
 
@@ -58,14 +33,9 @@ kCrabJob=$1
 #python -c "import PSet; print PSet.process.dumpPython()"
 #echo "================= Dumping PSet END ===================="
 
-#python crab_script.py $1
-#python example_postproc_1.py $1
-#echo 'cmsRun Nano_MC_addHto4bPlus_crab_cfg.py'
-#cmsRun Nano_MC_addHto4bPlus_crab_cfg.py
+## Your cmsRun config file is named as PSet.py
 echo 'cmsRun -j FrameworkJobReport.xml -p PSet.py'
 cmsRun -j FrameworkJobReport.xml -p PSet.py
-#echo 'cmsRun -j FrameworkJobReport.xml -p Nano_MC_addHto4bPlus_crab_cfg.py'
-#cmsRun -j FrameworkJobReport.xml -p Nano_MC_addHto4bPlus_crab_cfg.py
 echo 'DONE cmsRun Nano_MC_addHto4bPlus_crab_cfg.py'
 
 echo "After cmsRun Nano_MC_addHto4bPlus_crab_cfg.py PWD: " $PWD 
