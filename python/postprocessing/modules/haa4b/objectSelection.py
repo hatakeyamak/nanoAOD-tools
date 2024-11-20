@@ -142,6 +142,10 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_FatHj_dR",     "F")
         self.out.branch("Haa4b_FatHj_jet_pt", "F")
         
+        self.out.branch("Haa4b_FatH_MET_dPhi",    "F")
+        self.out.branch("Haa4b_FatH_lepMET_dPhi", "F")
+        self.out.branch("Haa4b_FatH_dilep_dPhi",  "F")
+
         if self.isMC:
             self.out.branch("Haa4b_FatH_nBQuarks",   "I")
             self.out.branch("Haa4b_FatH_nCQuarks",   "I")
@@ -159,13 +163,6 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_FatH_tagHaa34b_v1",  "F")
         self.out.branch("Haa4b_FatH_tagHaa34b_v2a", "F")
         self.out.branch("Haa4b_FatH_tagHaa34b_v2b", "F")
-        self.out.branch("Haa4b_FatH_tagHaa34b_v1",  "F")
-        self.out.branch("Haa4b_FatH_tagHaa34b_v2a", "F")
-        self.out.branch("Haa4b_FatH_tagHaa34b_v2b", "F")
-
-        self.out.branch("Haa4b_FatH_tagHaa4b_v1",  "F")
-        self.out.branch("Haa4b_FatH_tagHaa4b_v2a", "F")
-        self.out.branch("Haa4b_FatH_tagHaa4b_v2b", "F")
         self.out.branch("Haa4b_FatH_tagHaa4b_v1",  "F")
         self.out.branch("Haa4b_FatH_tagHaa4b_v2a", "F")
         self.out.branch("Haa4b_FatH_tagHaa4b_v2b", "F")
@@ -189,6 +186,9 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_dilep_dPhi",   "F")
         self.out.branch("Haa4b_dilep_charge", "I")
         self.out.branch("Haa4b_dilep_SFOS",   "b")
+        self.out.branch("Haa4b_lepMET_pt",    "F")
+        self.out.branch("Haa4b_lepMET_MT",    "F")
+        self.out.branch("Haa4b_lepMET_dPhi",  "F")
 
         ## Branches for categorization and triggers, per event
         self.out.branch("year",   "I")
@@ -631,11 +631,15 @@ class Haa4bObjectSelectionProducer(Module):
         dijet_dEta = (abs(vSelJetsNonH[0].Eta() - vSelJetsNonH[1].Eta()) if is2j else -99)
         dijet_dPhi = (abs(vSelJetsNonH[0].DeltaPhi(vSelJetsNonH[1]))     if is2j else -99)
         ## Pick highest-pT muons then highest-pT electrons for di-lepton pair
+        hasL = (nSelLepsNonOvlpH >= 1)
         is2L = (nSelLepsNonOvlpH >= 2)
-        if is2L:
+        if hasL:
             vLep1 = vSelLepsNonOvlpH[0]
-            vLep2 = vSelLepsNonOvlpH[1]
             idLep1 = idSelLepsNonOvlpH[0]
+            vLep1T = ROOT.TLorentzVector()
+            vLep1T.SetPtEtaPhiM(vLep1.Pt(), 0, vLep1.Phi(), 0)
+        if is2L:
+            vLep2 = vSelLepsNonOvlpH[1]
             idLep2 = idSelLepsNonOvlpH[1]
         dilep_mass   = ((vLep1+vLep2).M()           if is2L else -99)
         dilep_pt     = ((vLep1+vLep2).Pt()          if is2L else -99)
@@ -643,6 +647,14 @@ class Haa4bObjectSelectionProducer(Module):
         dilep_dPhi   = (abs(vLep1.DeltaPhi(vLep2))  if is2L else -99)
         dilep_charge = (2*(1-(idLep1>0)-(idLep2>0)) if is2L else -99)
         dilep_SFOS   = ((idLep1 + idLep2 == 0)      if is2L else 0)
+        ## Pick highest-pT lepton and MET for lep+MET calculations
+        lepMET_pt   = ((vLep1T+vMET).Pt()         if hasL else -99)
+        lepMET_MT   = ((vLep1T+vMET).M()          if hasL else -99)
+        lepMET_dPhi = (abs(vLep1T.DeltaPhi(vMET)) if hasL else -99)
+        ## Other dPhi quantities
+        FatH_MET_dPhi    = (abs(vCandH.DeltaPhi(vMET))        if iCandH >= 0 else -99)
+        FatH_lepMET_dPhi = (abs(vCandH.DeltaPhi(vMET+vLep1))  if iCandH >= 0 and hasL else -99)
+        FatH_dilep_dPhi  = (abs(vCandH.DeltaPhi(vLep1+vLep2)) if iCandH >= 0 and is2L else -99)
 
         self.out.fillBranch("Haa4b_iFatH",      iCandH)
         self.out.fillBranch("Haa4b_iFatHj_jet", iJetCandH)
@@ -690,16 +702,13 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Haa4b_FatHj_dR", vCandH.DeltaR(vJetCandH) if iJetCandH >= 0 else -99)
         self.out.fillBranch("Haa4b_FatHj_jet_pt", vJetCandH.Pt()       if iJetCandH >= 0 else -99)
         
-        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa34b_score  if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa34b_score if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa34b_score if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa34b_score  if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa34b_score if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa34b_score if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_MET_dPhi",    FatH_MET_dPhi)
+        self.out.fillBranch("Haa4b_FatH_lepMET_dPhi", FatH_lepMET_dPhi)
+        self.out.fillBranch("Haa4b_FatH_dilep_dPhi",  FatH_dilep_dPhi)
 
-        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa4b_score  if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa4b_score if iCandH >= 0 else -99)
-        self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa4b_score if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa34b_score  if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa34b_score if iCandH >= 0 else -99)
+        self.out.fillBranch("Haa4b_FatH_tagHaa34b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa34b_score if iCandH >= 0 else -99)
         self.out.fillBranch("Haa4b_FatH_tagHaa4b_v1",  FatJets[iCandH].PNet_X4b_v1_Haa4b_score  if iCandH >= 0 else -99)
         self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2a", FatJets[iCandH].PNet_X4b_v2a_Haa4b_score if iCandH >= 0 else -99)
         self.out.fillBranch("Haa4b_FatH_tagHaa4b_v2b", FatJets[iCandH].PNet_X4b_v2b_Haa4b_score if iCandH >= 0 else -99)
@@ -723,6 +732,9 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.fillBranch("Haa4b_dilep_dPhi",   dilep_dPhi)
         self.out.fillBranch("Haa4b_dilep_charge", dilep_charge)
         self.out.fillBranch("Haa4b_dilep_SFOS",   dilep_SFOS)
+        self.out.fillBranch("Haa4b_lepMET_pt",    lepMET_pt)
+        self.out.fillBranch("Haa4b_lepMET_MT",    lepMET_MT)
+        self.out.fillBranch("Haa4b_lepMET_dPhi",  lepMET_dPhi)
 
 
         ####################
@@ -738,7 +750,7 @@ class Haa4bObjectSelectionProducer(Module):
         if iCandH >= 0 and nTrigLeps == 0:
             ## For now, only make "exclusive" categories among high-MET and low-MET >=1b, 0b+dijet, and 0b
             if vMET.Pt() > 200:
-                if abs(vMET.DeltaPhi(vCandH)) > 0.5*math.pi:
+                if FatH_MET_dPhi > 0.5*math.pi:
                     cat_bit['Zvv'] = 1
                 for ii in range(len(vJets)):
                     if Jet_HEM_EM_bits[ii] == 1 and abs(vJets[ii].DeltaPhi(vMET)) < 0.3:
@@ -775,7 +787,7 @@ class Haa4bObjectSelectionProducer(Module):
             elif nSelLepsNonOvlpH == 1:
                 if sum(Jet_btag_nonH_bits) > 0:
                     cat_bit['ttlv'] = 1
-                elif abs((vSelLepsNonOvlpH[0]+vMET).DeltaPhi(vCandH)) > 0.75*math.pi:
+                elif FatH_lepMET_dPhi > 0.75*math.pi:
                     cat_bit['Wlv'] = 1
         ## Figure how many good Higgs candidate events we're losing "through the cracks"
         nCats = sum([cat_bit[cat] for cat in CATS])

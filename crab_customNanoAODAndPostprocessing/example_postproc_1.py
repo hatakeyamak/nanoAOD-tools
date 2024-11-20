@@ -6,6 +6,8 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer im
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.PrefireCorr import *
 #from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducerUL import *
+from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.objectSelection import Haa4bObjectSelectionProducer
+from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.genParticles import Haa4bGenParticlesBranches
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 from importlib import import_module
 import os
@@ -119,8 +121,10 @@ p = PostProcessor(
         jmeCorrectionsAK4(),
         puWeights(),
         #l1PrefirCorr2017(),
-        btagSF2018()
-        ], 
+        btagSF2018(),
+        Haa4bGenParticlesBranches(),
+        Haa4bObjectSelectionProducer(True,'2018')
+    ],
     #provenance=True,
     #fwkJobReport=True,
     #jsonInput=runsAndLumis()

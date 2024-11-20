@@ -44,9 +44,13 @@ class Haa4bGenParticlesProducer(Module):
         for gpk in GPks:
             self.out.branch("GEN_%s_pdgId" % gpk, "I")
 
-        self.out.branch("GEN_H_pt",  "F")
-        self.out.branch("GEN_X1_pt", "F")
-        self.out.branch("GEN_X2_pt", "F")
+        self.out.branch("GEN_H_pt",    "F")
+        self.out.branch("GEN_X1_pt",   "F")
+        self.out.branch("GEN_X2_pt",   "F")
+        self.out.branch("GEN_H_mass",  "F")
+        self.out.branch("GEN_a1_mass", "F")
+        self.out.branch("GEN_a2_mass", "F")
+
         self.out.branch("GEN_H_nB_AK8",  "I")  ## Number of b quarks from Higgs with dR < 0.8
         self.out.branch("GEN_H_nB_AK14", "I")  ## Number of b quarks from Higgs with dR < 1.4
         self.out.branch("GEN_H_dR_max2", "F")  ## 2nd-largest dR of decay products from parent
@@ -315,9 +319,13 @@ class Haa4bGenParticlesProducer(Module):
                                                                                    event.GenPart_pdgId[idx[gpk]]))
                 print('(run == %d && luminosityBlock == %d && event == %d)' % (event.run, event.luminosityBlock, event.event))
 
-        self.out.fillBranch("GEN_H_pt",  vec['H'].Pt())
-        self.out.fillBranch("GEN_X1_pt", vec['X1'].Pt())
-        self.out.fillBranch("GEN_X2_pt", vec['X2'].Pt())
+        self.out.fillBranch("GEN_H_pt",    vec['H'].Pt())
+        self.out.fillBranch("GEN_X1_pt",   vec['X1'].Pt())
+        self.out.fillBranch("GEN_X2_pt",   vec['X2'].Pt())
+        self.out.fillBranch("GEN_H_mass",  vec['H'].M())
+        self.out.fillBranch("GEN_a1_mass", vec['a1'].M())
+        self.out.fillBranch("GEN_a2_mass", vec['a2'].M())
+
         self.out.fillBranch("GEN_H_nB_AK8",  H_nB_AK8)
         self.out.fillBranch("GEN_H_nB_AK14", H_nB_AK14)
         self.out.fillBranch("GEN_H_dR_max",  H_dR_max)
