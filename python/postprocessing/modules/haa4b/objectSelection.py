@@ -63,11 +63,22 @@ class Haa4bObjectSelectionProducer(Module):
 
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
+
+        ## Critical to use "O" and not "b" or "B" for bools!!!
+        ## https://root.cern/doc/master/TBranch_8cxx_source.html
+        ## In lines 365 - 371, we see that the type for "O" is TLeafO (bool type),
+        ## but "B" and "b" are TLeafB (8 bit integer), and for some reason PyROOT
+        ## chokes on the bool type:
+        ## https://root-forum.cern.ch/t/reading-boolean-data-from-ttree-using-pyroot/39178
+        ## For further info see:
+        ## https://docs.python.org/3/library/array.html
+        ## python/postprocessing/framework/output.py _rootBranchType2PythonArray and L26 and L27
+
         ## Branches for object selection, per object
-        self.out.branch("FatJet_HEM",             "b", lenVar="nFatJet")
-        self.out.branch("FatJet_Haa4b_sel",       "b", lenVar="nFatJet")
-        self.out.branch("FatJet_Haa4b_candH",     "b", lenVar="nFatJet")
-        self.out.branch("FatJet_Haa4b_candX",     "b", lenVar="nFatJet")
+        self.out.branch("FatJet_HEM",             "O", lenVar="nFatJet")
+        self.out.branch("FatJet_Haa4b_sel",       "O", lenVar="nFatJet")
+        self.out.branch("FatJet_Haa4b_candH",     "O", lenVar="nFatJet")
+        self.out.branch("FatJet_Haa4b_candX",     "O", lenVar="nFatJet")
         self.out.branch("FatJet_Haa4b_ovlp_iMu",  "I", lenVar="nFatJet")
         self.out.branch("FatJet_Haa4b_ovlp_iEle", "I", lenVar="nFatJet")
         if self.isMC:
@@ -76,19 +87,19 @@ class Haa4bObjectSelectionProducer(Module):
             self.out.branch("FatJet_genPart_dR",      "F", lenVar="nFatJet")
             self.out.branch("FatJet_nBPartons",       "I", lenVar="nFatJet")
             self.out.branch("FatJet_nCPartons",       "I", lenVar="nFatJet")
-        self.out.branch("Muon_Haa4b_sel",       "b", lenVar="nMuon")
-        self.out.branch("Muon_Haa4b_trig",      "b", lenVar="nMuon")
+        self.out.branch("Muon_Haa4b_sel",       "O", lenVar="nMuon")
+        self.out.branch("Muon_Haa4b_trig",      "O", lenVar="nMuon")
         self.out.branch("Muon_Haa4b_ovlp_iFat", "I", lenVar="nMuon")
-        self.out.branch("Electron_HEM",             "b", lenVar="nElectron")
-        self.out.branch("Electron_Haa4b_sel",       "b", lenVar="nElectron")
-        self.out.branch("Electron_Haa4b_trig",      "b", lenVar="nElectron")
+        self.out.branch("Electron_HEM",             "O", lenVar="nElectron")
+        self.out.branch("Electron_Haa4b_sel",       "O", lenVar="nElectron")
+        self.out.branch("Electron_Haa4b_trig",      "O", lenVar="nElectron")
         self.out.branch("Electron_Haa4b_ovlp_iFat", "I", lenVar="nElectron")
-        self.out.branch("Jet_HEM",             "b", lenVar="nJet")
-        self.out.branch("Jet_HEM_EM",          "b", lenVar="nJet")
-        self.out.branch("Jet_Haa4b_presel",    "b", lenVar="nJet")
-        self.out.branch("Jet_Haa4b_sel",       "b", lenVar="nJet")
-        self.out.branch("Jet_Haa4b_btag",      "b", lenVar="nJet")
-        self.out.branch("Jet_Haa4b_candH",     "b", lenVar="nJet")
+        self.out.branch("Jet_HEM",             "O", lenVar="nJet")
+        self.out.branch("Jet_HEM_EM",          "O", lenVar="nJet")
+        self.out.branch("Jet_Haa4b_presel",    "O", lenVar="nJet")
+        self.out.branch("Jet_Haa4b_sel",       "O", lenVar="nJet")
+        self.out.branch("Jet_Haa4b_btag",      "O", lenVar="nJet")
+        self.out.branch("Jet_Haa4b_candH",     "O", lenVar="nJet")
         self.out.branch("Jet_Haa4b_ovlp_iFat", "I", lenVar="nJet")
         self.out.branch("Jet_Haa4b_ovlp_iMu",  "I", lenVar="nJet")
         self.out.branch("Jet_Haa4b_ovlp_iEle", "I", lenVar="nJet")
@@ -114,8 +125,8 @@ class Haa4bObjectSelectionProducer(Module):
         ## Branches for preliminary category designations
         CATS = ['gg0l','VBFjj','Vjj','ttHad','Zvv','Zll','Wlv','ttlv','ttll','2lSS','3l','other']
         for cat in CATS:
-            self.out.branch("Haa4b_cat_%s" % cat, "b")
-            self.out.branch("Haa4b_HEM_%s" % cat, "b")
+            self.out.branch("Haa4b_cat_%s" % cat, "O")
+            self.out.branch("Haa4b_HEM_%s" % cat, "O")
         self.out.branch("Haa4b_cat_idx", "I")
         self.out.branch("Haa4b_nCats",   "I")
         
@@ -196,26 +207,26 @@ class Haa4bObjectSelectionProducer(Module):
         self.out.branch("Haa4b_dilep_dR",     "F")
         self.out.branch("Haa4b_dilep_dPhi",   "F")
         self.out.branch("Haa4b_dilep_charge", "I")
-        self.out.branch("Haa4b_dilep_SFOS",   "b")
+        self.out.branch("Haa4b_dilep_SFOS",   "O")
         self.out.branch("Haa4b_lepMET_pt",    "F")
         self.out.branch("Haa4b_lepMET_MT",    "F")
         self.out.branch("Haa4b_lepMET_dPhi",  "F")
 
         ## Branches for categorization and triggers, per event
         self.out.branch("year",   "I")
-        self.out.branch("isData", "b")
-        self.out.branch("isMC",   "b")
-        self.out.branch("Haa4b_isHad",      "b")
-        self.out.branch("Haa4b_isLep",      "b")
-        self.out.branch("Haa4b_isMu",       "b")
-        self.out.branch("Haa4b_isEle",      "b")
-        self.out.branch("Haa4b_trigFat",    "b")
-        self.out.branch("Haa4b_trigBtag",   "b")
-        self.out.branch("Haa4b_trigVBF",    "b")
-        self.out.branch("Haa4b_trigMET",    "b")
-        self.out.branch("Haa4b_trigMu",     "b")
-        self.out.branch("Haa4b_trigEle",    "b")
-        self.out.branch("Haa4b_passFilters","b")
+        self.out.branch("isData", "O")
+        self.out.branch("isMC",   "O")
+        self.out.branch("Haa4b_isHad",      "O")
+        self.out.branch("Haa4b_isLep",      "O")
+        self.out.branch("Haa4b_isMu",       "O")
+        self.out.branch("Haa4b_isEle",      "O")
+        self.out.branch("Haa4b_trigFat",    "O")
+        self.out.branch("Haa4b_trigBtag",   "O")
+        self.out.branch("Haa4b_trigVBF",    "O")
+        self.out.branch("Haa4b_trigMET",    "O")
+        self.out.branch("Haa4b_trigMu",     "O")
+        self.out.branch("Haa4b_trigEle",    "O")
+        self.out.branch("Haa4b_passFilters","O")
         
 
     def endFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):

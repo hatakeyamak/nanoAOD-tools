@@ -23,6 +23,16 @@ class Haa4bGenParticlesProducer(Module):
     def beginFile(self, inputFile, outputFile, inputTree, wrappedOutputTree):
         self.out = wrappedOutputTree
 
+        ## Critical to use "O" and not "b" or "B" for bools!!!
+        ## https://root.cern/doc/master/TBranch_8cxx_source.html
+        ## In lines 365 - 371, we see that the type for "O" is TLeafO (bool type),
+        ## but "B" and "b" are TLeafB (8 bit integer), and for some reason PyROOT
+        ## chokes on the bool type:
+        ## https://root-forum.cern.ch/t/reading-boolean-data-from-ttree-using-pyroot/39178
+        ## For further info see:
+        ## https://docs.python.org/3/library/array.html
+        ## python/postprocessing/framework/output.py _rootBranchType2PythonArray and L26 and L27
+
         ## Branches for GEN-level particles, per event
         self.out.branch("GEN_H_idx",   "I")  ## Higgs
         self.out.branch("GEN_X1_idx",  "I")  ## 1st associated heavy particle
@@ -58,9 +68,9 @@ class Haa4bGenParticlesProducer(Module):
         self.out.branch("GEN_X1_dR", "F")
         self.out.branch("GEN_X2_dR", "F")
 
-        self.out.branch("GEN_fatH4b",  "b")
-        self.out.branch("GEN_fatH3b",  "b")
-        self.out.branch("GEN_trigLep", "b")
+        self.out.branch("GEN_fatH4b",  "O")
+        self.out.branch("GEN_fatH3b",  "O")
+        self.out.branch("GEN_trigLep", "O")
         self.out.branch("GEN_nLeps",   "I")
         self.out.branch("GEN_nBjets",  "I")
         self.out.branch("GEN_nFatX",   "I")
@@ -69,8 +79,8 @@ class Haa4bGenParticlesProducer(Module):
         ## and GEN-level category including pT/eta/dR cuts on GEN objects
         CATS = ['gg0l_VBFjj','Vjj','ttHad','Zvv','Zll','Wlv','ttlv','ttll']
         for cat in CATS:
-            self.out.branch("GEN_proc_%s" % cat, "b")
-            self.out.branch("GEN_cat_%s"  % cat, "b")
+            self.out.branch("GEN_proc_%s" % cat, "O")
+            self.out.branch("GEN_cat_%s"  % cat, "O")
         self.out.branch("GEN_proc_idx", "I")
         self.out.branch("GEN_cat_idx",  "I")
 
