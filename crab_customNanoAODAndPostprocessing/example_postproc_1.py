@@ -6,6 +6,8 @@ from PhysicsTools.NanoAODTools.postprocessing.modules.common.puWeightProducer im
 from PhysicsTools.NanoAODTools.postprocessing.modules.common.PrefireCorr import *
 #from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducer import *
 from PhysicsTools.NanoAODTools.postprocessing.modules.btv.btagSFProducerUL import *
+from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.objectSelection import Haa4bObjectSelectionProducer
+from PhysicsTools.NanoAODTools.postprocessing.modules.haa4b.genParticles import Haa4bGenParticlesBranches
 from PhysicsTools.NanoAODTools.postprocessing.framework.postprocessor import PostProcessor
 from importlib import import_module
 import os
@@ -141,9 +143,13 @@ if isMC:
 
     modulesToRun.extend([
         puWeights(),
-        btagSF()
+        btagSF(),
+        Haa4bGenParticlesBranches(),
     ])
 
+modulesToRun.extend([
+    Haa4bObjectSelectionProducer(True,'2018')
+])
 
 fnames = ["PNet_v1.root"] 
 if runLocally:
