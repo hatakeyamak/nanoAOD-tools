@@ -148,7 +148,7 @@ if isMC:
     ])
 
 modulesToRun.extend([
-    Haa4bObjectSelectionProducer(True,'2018')
+    Haa4bObjectSelectionProducer(isMC, DataYear.replace('UL', ''))
 ])
 
 fnames = ["PNet_v1.root"] 
