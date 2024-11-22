@@ -14,6 +14,10 @@ import numpy as np
 ROOT.PyConfig.IgnoreCommandLineOptions = True
 import correctionlib._core as correctionlibcore
 
+## Round pt and mass to 1 decimal place
+def rnd(inList):
+    return [round(val,1) for val in inList]
+
 class fatJetUncertaintiesProducer(Module):
     def __init__(
             self,
@@ -883,11 +887,11 @@ class fatJetUncertaintiesProducer(Module):
                         jets_msdcorr_jesDown[jesUncertainty].append(
                             jet_msdcorr_jesDown[jesUncertainty])
 
-        self.out.fillBranch("%s_pt_raw" % self.jetBranchName, jets_pt_raw)
-        self.out.fillBranch("%s_pt_nom" % self.jetBranchName, jets_pt_nom)
+        self.out.fillBranch("%s_pt_raw" % self.jetBranchName, rnd(jets_pt_raw))
+        self.out.fillBranch("%s_pt_nom" % self.jetBranchName, rnd(jets_pt_nom))
         self.out.fillBranch("%s_corr_JEC" % self.jetBranchName, jets_corr_JEC)
-        self.out.fillBranch("%s_mass_raw" % self.jetBranchName, jets_mass_raw)
-        self.out.fillBranch("%s_mass_nom" % self.jetBranchName, jets_mass_nom)
+        self.out.fillBranch("%s_mass_raw" % self.jetBranchName, rnd(jets_mass_raw))
+        self.out.fillBranch("%s_mass_nom" % self.jetBranchName, rnd(jets_mass_nom))
 
         if not self.isData:
             self.out.fillBranch("%s_corr_JER" % self.jetBranchName,
@@ -901,115 +905,115 @@ class fatJetUncertaintiesProducer(Module):
             for jerID in self.splitJERIDs:
                 self.out.fillBranch(
                     "%s_pt_jer%sUp" % (self.jetBranchName, jerID),
-                    jets_pt_jerUp[jerID])
+                    rnd(jets_pt_jerUp[jerID]))
                 self.out.fillBranch(
                     "%s_pt_jer%sDown" % (self.jetBranchName, jerID),
-                    jets_pt_jerDown[jerID])
+                    rnd(jets_pt_jerDown[jerID]))
                 self.out.fillBranch(
                     "%s_mass_jer%sUp" % (self.jetBranchName, jerID),
-                    jets_mass_jerUp[jerID])
+                    rnd(jets_mass_jerUp[jerID]))
                 self.out.fillBranch(
                     "%s_mass_jer%sDown" % (self.jetBranchName, jerID),
-                    jets_mass_jerDown[jerID])
+                    rnd(jets_mass_jerDown[jerID]))
             if self.storeMassJMR:
                 self.out.fillBranch("%s_mass_jmrUp" % self.jetBranchName,
-                                    jets_mass_jmrUp)
+                                    rnd(jets_mass_jmrUp))
                 self.out.fillBranch("%s_mass_jmrDown" % self.jetBranchName,
-                                    jets_mass_jmrDown)
+                                    rnd(jets_mass_jmrDown))
             if self.storeMassJMS:
                 self.out.fillBranch("%s_mass_jmsUp" % self.jetBranchName,
-                                    jets_mass_jmsUp)
+                                    rnd(jets_mass_jmsUp))
                 self.out.fillBranch("%s_mass_jmsDown" % self.jetBranchName,
-                                    jets_mass_jmsDown)
+                                    rnd(jets_mass_jmsDown))
 
         if self.doGroomed:
             self.out.fillBranch("%s_msoftdrop_raw" % self.jetBranchName,
-                                jets_msdcorr_raw)
+                                rnd(jets_msdcorr_raw))
             self.out.fillBranch("%s_msoftdrop_nom" % self.jetBranchName,
-                                jets_msdcorr_nom)
+                                rnd(jets_msdcorr_nom))
             #if self.applyMsdJMS:
             self.out.fillBranch("%s_msoftdrop_corr_JMS" % self.jetBranchName,
-                                jets_msdcorr_corr_JMS)
+                                rnd(jets_msdcorr_corr_JMS))
             self.out.fillBranch("%s_msoftdrop_corr_JMSUp" % self.jetBranchName,
-                                jets_msdcorr_corr_JMSUp)
+                                rnd(jets_msdcorr_corr_JMSUp))
             self.out.fillBranch("%s_msoftdrop_corr_JMSDown" % self.jetBranchName,
-                                jets_msdcorr_corr_JMSDown)            
+                                rnd(jets_msdcorr_corr_JMSDown))
             if self.applyMsdJMR:
                 self.out.fillBranch("%s_msoftdrop_corr_JMR" % self.jetBranchName,
-                                    jets_msdcorr_corr_JMR)
+                                    rnd(jets_msdcorr_corr_JMR))
             self.out.fillBranch("%s_msoftdrop_corr_PUPPI" % self.jetBranchName,
-                                jets_msdcorr_corr_PUPPI)
+                                rnd(jets_msdcorr_corr_PUPPI))
             if not self.isData:
                 if self.applyWJMS:
                     self.out.fillBranch(
                         "%s_msoftdrop_tau21DDT_nom" % self.jetBranchName,
-                        jets_msdcorr_tau21DDT_nom)
+                        rnd(jets_msdcorr_tau21DDT_nom))
                 for jerID in self.splitJERIDs:
                     self.out.fillBranch(
                         "%s_msoftdrop_jer%sUp" % (self.jetBranchName, jerID),
-                        jets_msdcorr_jerUp[jerID])
+                        rnd(jets_msdcorr_jerUp[jerID]))
                     self.out.fillBranch(
                         "%s_msoftdrop_jer%sDown" % (self.jetBranchName, jerID),
-                        jets_msdcorr_jerDown[jerID])
+                        rnd(jets_msdcorr_jerDown[jerID]))
                     if self.applyWJMS:
                         self.out.fillBranch(
                             "%s_msoftdrop_tau21DDT_jer%sUp" %
                             (self.jetBranchName, jerID),
-                            jets_msdcorr_tau21DDT_jerUp[jerID])
+                            rnd(jets_msdcorr_tau21DDT_jerUp[jerID]))
                         self.out.fillBranch(
                             "%s_msoftdrop_tau21DDT_jer%sDown" %
                             (self.jetBranchName, jerID),
-                            jets_msdcorr_tau21DDT_jerDown[jerID])
+                            rnd(jets_msdcorr_tau21DDT_jerDown[jerID]))
                 if self.applyMsdJMR:
                     self.out.fillBranch("%s_msoftdrop_jmrUp" % self.jetBranchName,
-                                        jets_msdcorr_jmrUp)
+                                        rnd(jets_msdcorr_jmrUp))
                     self.out.fillBranch(
                         "%s_msoftdrop_jmrDown" % self.jetBranchName,
-                        jets_msdcorr_jmrDown)
+                        rnd(jets_msdcorr_jmrDown))
                 if self.applyMsdJMS:
                     self.out.fillBranch("%s_msoftdrop_jmsUp" % self.jetBranchName,
-                                        jets_msdcorr_jmsUp)
+                                        rnd(jets_msdcorr_jmsUp))
                     self.out.fillBranch(
                         "%s_msoftdrop_jmsDown" % self.jetBranchName,
-                        jets_msdcorr_jmsDown)
+                        rnd(jets_msdcorr_jmsDown))
                 if self.applyWJMS:
                     self.out.fillBranch(
                         "%s_msoftdrop_tau21DDT_jmrUp" % self.jetBranchName,
-                        jets_msdcorr_tau21DDT_jmrUp)
+                        rnd(jets_msdcorr_tau21DDT_jmrUp))
                     self.out.fillBranch(
                         "%s_msoftdrop_tau21DDT_jmrDown" % self.jetBranchName,
-                        jets_msdcorr_tau21DDT_jmrDown)
+                        rnd(jets_msdcorr_tau21DDT_jmrDown))
                     self.out.fillBranch(
                         "%s_msoftdrop_tau21DDT_jmsUp" % self.jetBranchName,
-                        jets_msdcorr_tau21DDT_jmsUp)
+                        rnd(jets_msdcorr_tau21DDT_jmsUp))
                     self.out.fillBranch(
                         "%s_msoftdrop_tau21DDT_jmsDown" % self.jetBranchName,
-                        jets_msdcorr_tau21DDT_jmsDown)
+                        rnd(jets_msdcorr_tau21DDT_jmsDown))
 
         if not self.isData:
             for jesUncertainty in self.jesUncertainties:
                 self.out.fillBranch(
                     "%s_pt_jes%sUp" % (self.jetBranchName, jesUncertainty),
-                    jets_pt_jesUp[jesUncertainty])
+                    rnd(jets_pt_jesUp[jesUncertainty]))
                 self.out.fillBranch(
                     "%s_pt_jes%sDown" % (self.jetBranchName, jesUncertainty),
-                    jets_pt_jesDown[jesUncertainty])
+                    rnd(jets_pt_jesDown[jesUncertainty]))
                 self.out.fillBranch(
                     "%s_mass_jes%sUp" % (self.jetBranchName, jesUncertainty),
-                    jets_mass_jesUp[jesUncertainty])
+                    rnd(jets_mass_jesUp[jesUncertainty]))
                 self.out.fillBranch(
                     "%s_mass_jes%sDown" % (self.jetBranchName, jesUncertainty),
-                    jets_mass_jesDown[jesUncertainty])
+                    rnd(jets_mass_jesDown[jesUncertainty]))
 
                 if self.doGroomed:
                     self.out.fillBranch(
                         "%s_msoftdrop_jes%sUp" %
                         (self.jetBranchName, jesUncertainty),
-                        jets_msdcorr_jesUp[jesUncertainty])
+                        rnd(jets_msdcorr_jesUp[jesUncertainty]))
                     self.out.fillBranch(
                         "%s_msoftdrop_jes%sDown" %
                         (self.jetBranchName, jesUncertainty),
-                        jets_msdcorr_jesDown[jesUncertainty])
+                        rnd(jets_msdcorr_jesDown[jesUncertainty]))
 
         return True
 
