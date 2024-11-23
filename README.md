@@ -143,7 +143,7 @@ To submit crab jobs for 2018 MC signal (or background) samples:
 ```
 cd crab_haa4b_NanoAOD_2018_mc
 ```
-Edit 'datasets' variable in crab_job_signal.sh (or crab_job.sh for brackground samples). 
+Edit 'datasets' variable in [crab_job_signal.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/dfa87c21330cee99ec96e1ee211ea94a8363e5f6/crab_haa4b_NanoAOD_2018_mc/crab_job_signal.sh) (or [crab_job.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/dfa87c21330cee99ec96e1ee211ea94a8363e5f6/crab_haa4b_NanoAOD_2018_mc/crab_job.sh) for brackground samples). 
 
 To submit CRAB jobs:
 ```
