@@ -36,4 +36,4 @@ config.Data.splitting = 'FileBased' # 'Automatic' #'LumiBased' 'FileBased'
 config.Data.unitsPerJob = 1 #10 # 50
 # config.Data.totalUnits = 100  ## Perform a small test
 config.Site.storageSite = 'T2_CH_CERN' # Choose your site
-config.Data.outLFNDirBase = '/store/group/phys_susy/HToaaTo4b/NanoAOD/2018/MC/PNet_v2_2024_11_22/' #'/store/group/phys_susy/HToaaTo4b/NanoAOD/2018/MC/PNet_v1_2023_10_06/'
+config.Data.outLFNDirBase = '/store/group/phys_susy/HToaaTo4b/NanoAOD/2018/MC/PNet_v2_2024_11_22/'
