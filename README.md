@@ -113,13 +113,13 @@ git cms-addpkg CommonTools/RecoAlgos
 git cms-addpkg SimDataFormats/JetMatching
 
 
-git clone -b HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev git@github.com:abrinke1/RecoBTag-Combined.git RecoBTag/Combined/data
+git clone -b PNet_v2_2024_11_22_sig git@github.com:abrinke1/RecoBTag-Combined.git RecoBTag/Combined/data
 
 git remote add abrinke1 https://gitlab.cern.ch/abrinke1/cmssw.git 
-git checkout -b HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev
-git pull abrinke1 HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev
+git checkout -b PNet_v2_2024_11_22_sig
+git pull abrinke1 PNet_v2_2024_11_22_sig
 
-git clone -b HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev git@github.com:abrinke1/PFNano.git PhysicsTools/PFNano
+git clone -b PNet_v2_2024_11_22_sig git@github.com:abrinke1/PFNano.git PhysicsTools/PFNano
 git clone -b nanoPostProc_SS git@github.com:siddhesh86/nanoAOD-tools.git PhysicsTools/NanoAODTools
 
 scram b -j 6
@@ -136,14 +136,15 @@ cmsenv
 voms-proxy-init -voms cms -rfc -valid 192:00
 source /cvmfs/cms.cern.ch/crab3/crab.sh
 
-cd PhysicsTools/NanoAODTools/crab_haa4b_NanoAOD_2018_mc
+cd PhysicsTools/NanoAODTools/
 ```
 
 To submit crab jobs for 2018 MC signal (or background) samples:
 ```
 cd crab_haa4b_NanoAOD_2018_mc
 ```
-Edit 'datasets' variable in [crab_job_signal.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/dfa87c21330cee99ec96e1ee211ea94a8363e5f6/crab_haa4b_NanoAOD_2018_mc/crab_job_signal.sh) (or [crab_job.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/dfa87c21330cee99ec96e1ee211ea94a8363e5f6/crab_haa4b_NanoAOD_2018_mc/crab_job.sh) for brackground samples). 
+
+Edit 'datasets' and 'MassAList' variables in [crab_job_signal.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/nanoPostProc_SS/crab_haa4b_NanoAOD_2018_mc/crab_job_signal.sh) (or [crab_job.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/nanoPostProc_SS/crab_haa4b_NanoAOD_2018_mc/crab_job.sh) for background samples).
 
 To submit CRAB jobs:
 ```

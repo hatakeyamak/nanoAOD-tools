@@ -10,7 +10,7 @@ import ROOT as R
 R.gROOT.SetBatch(True)  ## Don't display histograms or canvases when drawn
 
 MAX_EVT = -1  ## Maximum number of events to process per MC sample
-PRT_EVT = 1000    ## Print every Nth event while processing
+PRT_EVT = 10000    ## Print every Nth event while processing
 DEBUG   = False
 
 ## Location of postprocessed input files
@@ -21,9 +21,9 @@ CATS = ['gg0lHi','gg0lLo','VBFjjHi','VBFjjLo','ZvvHi','ZvvLo','Vjj','ttHad',
         'ttbblv_m','ttbblv_e','ttblv_m','ttblv_e','ttll_m','ttll_e',
         '2lSS','3l','other']
 ## MC samples to test
-#SAMPS = ['GluGluH_M-15','GluGluH_M-25','GluGluH_M-40','GluGluH_M-55','VBFH_M-30',
-#         'WH_M-20','WH_M-25','ZH_M-20','ZH_M-40','TTH_M-15','TTH_M-55']
-SAMPS = ['TTH_M-55']
+SAMPS = ['GluGluH_M-15','GluGluH_M-25','GluGluH_M-40','GluGluH_M-55','VBFH_M-30',
+         'WH_M-20','ZH_M-20','ZH_M-40','TTH_M-15','TTH_M-55']
+#SAMPS = ['GluGluH_M-15']
 
 
 ## Count passing events for each sample in each category
