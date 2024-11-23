@@ -36,21 +36,21 @@ kCrabJob=$1
 ## Your cmsRun config file is named as PSet.py
 echo 'cmsRun -j FrameworkJobReport.xml -p PSet.py'
 cmsRun -j FrameworkJobReport.xml -p PSet.py
-echo 'DONE cmsRun Nano_MC_addHto4bPlus_crab_cfg.py'
+echo 'DONE cmsRun PSet.py'
 
-echo "After cmsRun Nano_MC_addHto4bPlus_crab_cfg.py PWD: " $PWD 
-echo "After cmsRun Nano_MC_addHto4bPlus_crab_cfg.py ls:"
+echo "After cmsRun PSet.py PWD: " $PWD 
+echo "After cmsRun PSet.py ls:"
 ls
 
 echo "ls PNet_v1*.root"
 ls PNet_v1*.root
 
-echo "python example_postproc_1.py ${kCrabJob} "
-python example_postproc_1.py ${kCrabJob}
-echo "DONE python example_postproc_1.py ${kCrabJob} "
+echo "python Hto4b_postproc.py ${kCrabJob} "
+python Hto4b_postproc.py ${kCrabJob}
+echo "DONE python Hto4b_postproc.py ${kCrabJob} "
 
-echo "After python example_postproc_1.py PWD: " $PWD 
-echo "After python example_postproc_1.py ls:"
+echo "After python Hto4b_postproc.py PWD: " $PWD 
+echo "After python Hto4b_postproc.py ls:"
 ls
 
 echo "crab_script.sh Done"
