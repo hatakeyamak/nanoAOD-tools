@@ -92,3 +92,73 @@ python scripts/nano_postproc.py outDir /eos/cms/store/user/andrey/f.root -I Phys
 This module has the same structure of its producer as `exampleProducer`, but in addition it utilizes a C++ code to calculate the mht variable, `src/mhtjuProducerCppWorker.cc`. This code is loaded in the `__init__` method of the producer.
 
 
+## HToAATo4b NanoAOD v2 production: instructions
+
+### Setting up repository
+
+```
+cmssw-el7
+cmsrel CMSSW_10_6_30
+
+cd CMSSW_10_6_30/src
+cmsenv
+scram b -j 6
+
+git cms-addpkg RecoBTag/Combined
+git cms-addpkg RecoBTag/ONNXRuntime
+git cms-addpkg PhysicsTools/NanoAOD
+git cms-addpkg PhysicsTools/PatAlgos
+git cms-addpkg DataFormats/PatCandidates
+git cms-addpkg CommonTools/RecoAlgos
+git cms-addpkg SimDataFormats/JetMatching
+
+
+git clone -b HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev git@github.com:abrinke1/RecoBTag-Combined.git RecoBTag/Combined/data
+
+git remote add abrinke1 https://gitlab.cern.ch/abrinke1/cmssw.git 
+git checkout -b HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev
+git pull abrinke1 HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev
+
+git clone -b HtoAA_PNet_PFCand_v2_2024_09_03_AWB_dev git@github.com:abrinke1/PFNano.git PhysicsTools/PFNano
+git clone -b nanoPostProc_SS git@github.com:siddhesh86/nanoAOD-tools.git PhysicsTools/NanoAODTools
+
+scram b -j 6
+```
+
+### SUbmitting CRAB jobs
+
+```
+cd CMSSW_10_6_30/src
+cmssw-el7
+cmsenv
+
+# set up CRAB environment
+voms-proxy-init -voms cms -rfc -valid 192:00
+source /cvmfs/cms.cern.ch/crab3/crab.sh
+
+cd PhysicsTools/NanoAODTools/crab_haa4b_NanoAOD_2018_mc
+```
+
+To submit crab jobs for 2018 MC signal (or background) samples:
+```
+cd crab_haa4b_NanoAOD_2018_mc
+```
+Edit 'datasets' variable in crab_job_signal.sh (or crab_job.sh for brackground samples). 
+
+To submit CRAB jobs:
+```
+./crab_job_signal.sh submit  # or ./crab_job.sh submit
+```
+
+To check status of crab jobs:
+```
+./crab_job_signal.sh status  # or ./crab_job.sh status
+```
+
+To resubmit failed crab jobs:
+```
+./crab_job_signal.sh resubmit  # or ./crab_job.sh resubmit
+```
+
+
+
