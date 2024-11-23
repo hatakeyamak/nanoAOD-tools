@@ -29,9 +29,8 @@ config.Data.inputDataset = 'DUMMY'
 
 config.General.requestName = 'DUMMY'
 config.Data.outputDatasetTag = 'r1'
-config.Data.publication = False
+config.Data.publication = True
 
-config.Data.ignoreLocality = False
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased' # 'Automatic' #'LumiBased' 'FileBased'
 config.Data.unitsPerJob = 1 #10 # 50

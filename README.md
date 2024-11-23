@@ -125,7 +125,7 @@ git clone -b nanoPostProc_SS git@github.com:siddhesh86/nanoAOD-tools.git Physics
 scram b -j 6
 ```
 
-### SUbmitting CRAB jobs
+### Submitting CRAB jobs
 
 ```
 cd CMSSW_10_6_30/src
