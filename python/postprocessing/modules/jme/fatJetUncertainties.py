@@ -106,6 +106,10 @@ class fatJetUncertaintiesProducer(Module):
             if self.era in ["2017", "2018"]:
                 self.jmrVals = [1.09, 1.14, 1.04]
 
+        print("fatjetUncertinties:: globalTag: ", globalTag, 
+              ", jetType: ", jetType,
+              ", jerInputFileName: ", self.jerInputFileName, 
+              ", jerUncertaintyInputFileName: ",self.jerUncertaintyInputFileName)
         self.jetSmearer = jetSmearer(globalTag, jetType, self.jerInputFileName,
                                      self.jerUncertaintyInputFileName,
                                      self.jmrVals)
@@ -171,7 +175,7 @@ class fatJetUncertaintiesProducer(Module):
             self.jmsMsdVals = [1.000, 1.000, 1.000]  # dummy
             #print('self.jmsMsdVals_funcOfPtEta: ', self.jmsMsdVals_funcOfPtEta)
             #print('self.jmsVals: ', self.jmsVals)
-            
+            print("fatjetUncertinties:: jmsMsdVals_funcOfPtEta_file: ", self.jmsMsdVals_funcOfPtEta_file)            
             
             
 

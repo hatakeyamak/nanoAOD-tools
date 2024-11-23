@@ -56,6 +56,15 @@ class btagSFProducer(Module):
         self.supported_wp = None
         supported_btagSF = {
             'deepjet': {
+                'UL2016_preVFP': { 
+                    'inputFileName': "UL2016APV/btagging.json.gz", # /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/
+                    'measurement_types': { # jet_flavour: "measurement_tag"
+                        5: "comb",  #0: "comb",  # b
+                        4: "comb",  #1: "comb",  # c
+                        0: "incl"   #2: "incl"   # light
+                    },
+                    'supported_wp': ["L", "M", "T", "shape_corr"]
+                },
                 'UL2016': { 
                     'inputFileName': "UL2016/btagging.json.gz", # /cvmfs/cms.cern.ch/rsync/cms-nanoAOD/jsonpog-integration/POG/BTV/
                     'measurement_types': { # jet_flavour: "measurement_tag"
