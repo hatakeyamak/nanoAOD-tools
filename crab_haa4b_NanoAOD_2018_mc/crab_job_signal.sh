@@ -12,11 +12,13 @@
 ## '--jobids' : Comma-separated list of job IDs
 ## <<< crab resubmit >>>
 ## '--force'  : What it sounds like
-## '--maxjobruntime=3000' : Allow job to run for 2 days
+## '--maxjobruntime=3000' : Allow job to run for 2 days.        --maxjobruntime=7200
 
 ### Settings ----------------------------------------------------------------------------------------------------------
 #declare -a MassAList=(12 15 20 25 30 35 40 45 50 55 60)
-declare -a MassAList=(12) 
+declare -a MassAList=(12 15 20 25 30 35)
+#declare -a MassAList=(15 20 25 30) 
+#declare -a MassAList=(25 30) 
 
 ## Construct the string for 'SSUSY_GluGluH_01J_HToAATo4B_Pt150_M*' samples in DAS (https://cmsweb.cern.ch/das/)
 ## dasgoclient --query="dataset=/SUSY_GluGluH_01J_HToAATo4B_Pt150_M*/RunIISummer20UL18MiniAODv2-106X_upgrade2018_realistic_v16*/MINIAODSIM"
