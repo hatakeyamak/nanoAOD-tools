@@ -139,7 +139,7 @@ source /cvmfs/cms.cern.ch/crab3/crab.sh
 cd PhysicsTools/NanoAODTools/
 ```
 
-To submit crab jobs for 2018 MC signal (or background) samples:
+#### To submit crab jobs for 2018 MC signal (or background) samples:
 ```
 cd crab_haa4b_NanoAOD_2018_mc
 ```
@@ -159,6 +159,18 @@ To check status of crab jobs:
 To resubmit failed crab jobs:
 ```
 ./crab_job_signal.sh resubmit  # or ./crab_job.sh resubmit
+```
+
+#### To submit crab jobs for 2018 Data:
+```
+cd crab_haa4b_NanoAOD_2018_data
+```
+
+Edit 'datasets' in [crab_job.sh](https://github.com/siddhesh86/nanoAOD-tools/blob/nanoPostProc_SS/crab_haa4b_NanoAOD_2018_data/crab_job.sh#L23-L28).
+
+To submit CRAB jobs:
+```
+./crab_job.sh submit  
 ```
 
 
