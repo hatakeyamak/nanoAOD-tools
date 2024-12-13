@@ -46,7 +46,7 @@ process.maxEvents = cms.untracked.PSet(
 )
 process.MessageLogger.cerr.FwkReport.reportEvery = PRT_EVT
 
-top_dir = '/eos/cms/store/group/phys_susy/HToaaTo4b/MiniAOD/2018/MC/'
+top_dir = '/eos/cms/store/group/phys_susy/hatake/HToaaTo4b/MiniAOD/2018/MC/'
 if SAMP == 'HToAA_Pt350_mH-70_mA-12':
     in_dir = top_dir+'SUSY_GluGluH_01J_HToAATo4B_Pt350_mH-70_mA-12_wH-70_wA-70_TuneCP5_13TeV_madgraph_pythia8/RunIISummer20UL18/'
     in_files = ['file:'+in_dir+'10300/MiniAODv2_10312.root', ## Small file (4.6 MB)
@@ -189,3 +189,6 @@ process = PFnano_customizeMC_Haa4b(process, SKIM_FAT_SEL)
 from Configuration.StandardSequences.earlyDeleteSettings_cff import customiseEarlyDelete
 process = customiseEarlyDelete(process)
 # End adding early deletion
+
+process.options.numberOfThreads=cms.untracked.uint32(4)
+process.options.numberOfStreams=cms.untracked.uint32(0)
