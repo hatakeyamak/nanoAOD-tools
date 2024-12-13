@@ -11,7 +11,7 @@ import os
 
 config = config()
 
-config.General.workArea = 'crab/re'
+config.General.workArea = 'crab/r1'
 config.General.transferOutputs = True
 config.General.transferLogs = True
 
@@ -28,14 +28,14 @@ config.JobType.numCores = 4
 config.Data.inputDataset = 'DUMMY'
 
 config.General.requestName = 'DUMMY'
-config.Data.outputDatasetTag = 're'
-config.Data.publication = False
+config.Data.outputDatasetTag = 'r1'
+config.Data.publication = True
 
 config.Data.inputDBS = 'global'
 config.Data.splitting = 'FileBased' # 'Automatic' #'LumiBased' 'FileBased'
 config.Data.unitsPerJob = 1 #10 # 50
 # config.Data.totalUnits = 100  ## Perform a small test
 config.Site.storageSite = 'T2_CH_CERN' # Choose your site
-config.Data.outLFNDirBase = '/store/group/phys_susy/hatake/HToaaTo4b/NanoAOD/2018/MC/PNet_v2_2024_11_22/'
+config.Data.outLFNDirBase = '/store/group/phys_susy/HToaaTo4b/NanoAOD/2018/MC/PNet_v2_2024_11_22/'
 config.Site.whitelist = ["T1_US*","T2_US*","T3_US_Baylor","T3_US_Colorado","T2_CH*","T1_IT*","T2_IT*","T2_UK*","T2_BE*","T2_DE*"]
 config.Data.ignoreLocality = True
